@@ -1,0 +1,10 @@
+fun div(a: u32, b: u32) -> u32 {
+  var c: u32;
+  if b == 0 {
+    raise("low quality bait");
+  }
+  if a == u32min and b == -1 {
+    raise("wow wow");
+  }
+  return a / b;
+}

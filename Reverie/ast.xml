@@ -1,0 +1,94 @@
+<ast>
+    <function name="doThings" type="u32">
+        <parameter name="a" type="u32" />
+        <parameter name="b" type="u32" />
+        <parameter name="c" type="u32" />
+        <parameter name="d" type="u32" />
+        <parameter name="e" type="u32" />
+        <parameter name="f" type="u32" />
+        <parameter name="g" type="u32" />
+        <parameter name="h" type="u32" />
+        <parameter name="i" type="u32" />
+        <body>
+            <local type="u32" name="c" />
+            <if>
+                <predicate>
+                    <binary op="==">
+                        <left>
+                            <literal.identifier name="b" />
+                        </left>
+                        <right>
+                            <literal.integer value="0" />
+                        </right>
+                    </binary>
+                </predicate>
+                <body>
+                    <call>
+                        <callee type="literal.identifier" name="raise" />
+                        <arguments>
+                            <literal.string data="wow wow" />
+                        </arguments>
+                    </call>
+                </body>
+            </if>
+            <return>
+                <value>
+                    <div>
+                        <left>
+                            <literal.identifier name="a" />
+                        </left>
+                        <right>
+                            <literal.identifier name="b" />
+                        </right>
+                    </div>
+                </value>
+            </return>
+        </body>
+    </function>
+    <function name="doOtherThings" type="u32">
+        <parameter name="a" type="u32" />
+        <parameter name="b" type="u32" />
+        <parameter name="c" type="u32" />
+        <parameter name="d" type="u32" />
+        <parameter name="e" type="u32" />
+        <parameter name="f" type="u32" />
+        <parameter name="g" type="u32" />
+        <parameter name="h" type="u32" />
+        <parameter name="i" type="u32" />
+        <body>
+            <local type="u32" name="c" />
+            <if>
+                <predicate>
+                    <binary op="==">
+                        <left>
+                            <literal.identifier name="b" />
+                        </left>
+                        <right>
+                            <literal.integer value="0" />
+                        </right>
+                    </binary>
+                </predicate>
+                <body>
+                    <call>
+                        <callee type="literal.identifier" name="raise" />
+                        <arguments>
+                            <literal.string data="wow wow" />
+                        </arguments>
+                    </call>
+                </body>
+            </if>
+            <return>
+                <value>
+                    <div>
+                        <left>
+                            <literal.identifier name="a" />
+                        </left>
+                        <right>
+                            <literal.identifier name="b" />
+                        </right>
+                    </div>
+                </value>
+            </return>
+        </body>
+    </function>
+</ast>

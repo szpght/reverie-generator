@@ -1,0 +1,136 @@
+{
+  "Functions": [
+    {
+      "Wtf": "function",
+      "Name": "doThings",
+      "Parameters": [
+        {
+          "Name": "a",
+          "Type": "u32"
+        },
+        {
+          "Name": "b",
+          "Type": "u32"
+        }
+      ],
+      "Type": "u32",
+      "Body": [
+        {
+          "Wtf": "local",
+          "Type": "u32",
+          "Name": "c"
+        },
+        {
+          "Wtf": "if",
+          "Predicate": {
+            "Wtf": "==",
+            "Left": {
+              "Wtf": "literal.identifier",
+              "Name": "b"
+            },
+            "Right": {
+              "Wtf": "literal.integer",
+              "Data": "0"
+            }
+          },
+          "Body": [
+            {
+              "Wtf": "call",
+              "Callee": {
+                "Type": "literal.identifier",
+                "Name": "raise"
+              },
+              "Arguments": [
+                {
+                  "Wtf": "literal.string",
+                  "Data": "wow wow"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Wtf": "return",
+          "Value": {
+            "Wtf": "/",
+            "Left": {
+              "Wtf": "literal.identifier",
+              "Name": "a"
+            },
+            "Right": {
+              "Wtf": "literal.identifier",
+              "Name": "b"
+            }
+          }
+        }
+      ]
+    },
+
+    {
+      "Wtf": "function",
+      "Name": "doOtherThings",
+      "Parameters": [
+        {
+          "Name": "a",
+          "Type": "u32"
+        },
+        {
+          "Name": "b",
+          "Type": "u32"
+        }
+      ],
+      "Type": "u32",
+      "Body": [
+        {
+          "Wtf": "local",
+          "Type": "u32",
+          "Name": "c"
+        },
+        {
+          "Wtf": "if",
+          "Predicate": {
+            "Wtf": "==",
+            "Left": {
+              "Wtf": "literal.identifier",
+              "Name": "b"
+            },
+            "Right": {
+              "Wtf": "literal.integer",
+              "Data": "0"
+            }
+          },
+          "Body": [
+            {
+              "Wtf": "call",
+              "Callee": {
+                "Type": "literal.identifier",
+                "Name": "raise"
+              },
+              "Arguments": [
+                {
+                  "Wtf": "literal.string",
+                  "Data": "wow wow"
+                }
+              ]
+            }
+          ]
+        },
+        {
+          "Wtf": "return",
+          "Value": {
+            "Wtf": "/",
+            "Left": {
+              "Wtf": "literal.identifier",
+              "Name": "a"
+            },
+            "Right": {
+              "Wtf": "literal.identifier",
+              "Name": "b"
+            }
+          }
+        }
+      ]
+    }
+
+  ]
+}

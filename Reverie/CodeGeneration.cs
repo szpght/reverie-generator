@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Threading;
 
 namespace Reverie.CodeGeneration
 {
@@ -48,6 +47,15 @@ namespace Reverie.CodeGeneration
 
     public class Assembly : List<string>
     {
+        public Assembly()
+        {
+        }
+
+        public Assembly(string line)
+        {
+            Add(line);
+        }
+
         public void AddLine(string line)
         {
             Add(line);
@@ -62,7 +70,8 @@ namespace Reverie.CodeGeneration
     public class Register
     {
         public string Name { get; set; }
-        public VariableSize Size { get; set; } = VariableSize.Qword;
+        public string NormalizedName => RegisterNames[Name];
+        public VariableSize Size { get; set; }
 
         public Register(string register, VariableSize size)
         {
@@ -72,12 +81,7 @@ namespace Reverie.CodeGeneration
 
         public override string ToString()
         {
-            return NormalizedName(Name) + Size.RegisterSuffix();
-        }
-
-        private static string NormalizedName(string name)
-        {
-            return RegisterNames[name];
+            return NormalizedName + Size.RegisterSuffix();
         }
 
         private static readonly Dictionary<string, string> RegisterNames = new Dictionary<string, string>()
@@ -96,6 +100,7 @@ namespace Reverie.CodeGeneration
     public interface IOperand
     {
         Assembly Load(Register register);
+        Assembly Store(Register register);
     }
 
     public class Label
@@ -128,33 +133,15 @@ namespace Reverie.CodeGeneration
 
         public Assembly Load(Register register)
         {
-            var asm = new Assembly();
-            asm.AddLine($"mov {register}, {Size.Asm()} [{Base} + {Offset}]");
+            var asm = new Assembly($"mov {register}, {Size.Asm()} [{Base} + {Offset}]");
             return asm;
         }
 
         public Assembly Store(Register register)
         {
-            var asm = new Assembly();
-            asm.AddLine($"mov {Size.Asm()} [{Base} + {Offset}], ");
-        }
-    }
-
-    public abstract class Gadget
-    {
-        public IOperand Operand1 { get; set; }
-        public IOperand Operand2 { get; set; }
-        public IOperand Operand3 { get; set; }
-        public IOperand Operand4 { get; set; }
-
-        public abstract string Generate();
-    }
-
-    public class Add : Gadget
-    {
-        public override string Generate()
-        {
-            throw new System.NotImplementedException();
+            var asm = new Assembly($"xor {register.NormalizedName}, {register.NormalizedName}");
+            asm.AddLine($"mov {Size.Asm()} [{Base} + {Offset}], {register}");
+            return asm;
         }
     }
 }

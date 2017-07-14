@@ -12,7 +12,7 @@ namespace Reverie.Tests
         {
             var asm = LoadWordStackToEax();
 
-            Assert.Equal(1, asm.Count);
+            Assert.Single(asm);
         }
 
         [Fact]
@@ -20,7 +20,31 @@ namespace Reverie.Tests
         {
             var asm = LoadWordStackToEax();
 
-            Assert.Equal("mov r0d, WORD [rsp + 4]", asm.Single());
+            Assert.Equal("mov r0w, WORD [rsp + 4]", asm.Single());
+        }
+
+        [Fact]
+        public void StoreDwordEbxToStackHasTwoLines()
+        {
+            var asm = StoreDwordEbxToStack();
+
+            Assert.Equal(2, asm.Count);
+        }
+
+        [Fact]
+        public void StoreDwordEbxToStackZeroesRegister()
+        {
+            var asm = StoreDwordEbxToStack();
+
+            Assert.Equal("xor r3, r3", asm[0]);
+        }
+
+        [Fact]
+        public void StoreDwordEbxToStackCorrect()
+        {
+            var asm = StoreDwordEbxToStack();
+
+            Assert.Equal("mov DWORD [rsp + 4], r3d", asm[1]);
         }
 
         private Assembly LoadWordStackToEax()
@@ -29,6 +53,14 @@ namespace Reverie.Tests
             var register = new Register("rax", VariableSize.Word);
 
             return variable.Load(register);
+        }
+
+        private Assembly StoreDwordEbxToStack()
+        {
+            var variable = new Variable("rsp", 4, VariableSize.Dword);
+            var register = new Register("rbx", VariableSize.Dword);
+
+            return variable.Store(register);
         }
     }
 }

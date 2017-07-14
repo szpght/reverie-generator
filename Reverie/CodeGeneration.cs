@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Linq;
 
 namespace Reverie.CodeGeneration
 {
@@ -56,9 +57,9 @@ namespace Reverie.CodeGeneration
             Add(line);
         }
 
-        public void AddLine(string line)
+        public void Add(Assembly assembly)
         {
-            Add(line);
+            AddRange(assembly);
         }
 
         public override string ToString()
@@ -70,7 +71,7 @@ namespace Reverie.CodeGeneration
     public class Register
     {
         public string Name { get; set; }
-        public string NormalizedName => RegisterNames[Name];
+        public string NormalizedName => RegisterNames.ContainsKey(Name) ? RegisterNames[Name] : Name;
         public VariableSize Size { get; set; }
 
         public Register(string register, VariableSize size)
@@ -133,14 +134,80 @@ namespace Reverie.CodeGeneration
 
         public Assembly Load(Register register)
         {
-            var asm = new Assembly($"mov {register}, {Size.Asm()} [{Base} + {Offset}]");
+            var asm = new Assembly();
+            if (Size != VariableSize.Qword)
+            {
+                asm.Add($"xor {register.NormalizedName}, {register.NormalizedName}");
+            }
+            asm.Add($"mov {register}, {Size.Asm()} [{Base} + {Offset}]");
             return asm;
         }
 
         public Assembly Store(Register register)
         {
-            var asm = new Assembly($"xor {register.NormalizedName}, {register.NormalizedName}");
-            asm.AddLine($"mov {Size.Asm()} [{Base} + {Offset}], {register}");
+            return new Assembly($"mov {Size.Asm()} [{Base} + {Offset}], {register}");
+        }
+    }
+
+    public class RegisterAllocator
+    {
+        public Dictionary<Variable, Register> Allocations { get; set; }
+            = new Dictionary<Variable, Register>();
+
+        private static HashSet<string> FreeRegisters =
+            new HashSet<string>()
+            {
+                "r15",
+                "r14",
+                "r13",
+                "r12"
+            };
+
+        public Register Allocate(Variable variable)
+        {
+            if (Allocations.ContainsKey(variable))
+            {
+                return Allocations[variable];
+            }
+            var registerName = FreeRegisters.First();
+            FreeRegisters.Remove(registerName);
+            var register = new Register(registerName, variable.Size);
+            Allocations[variable] = register;
+            return register;
+        }
+
+        public void SetAllocation(Register register, Variable variable)
+        {
+            Allocations[variable] = register;
+        }
+    }
+
+    public class Add
+    {
+        private RegisterAllocator allocator_;
+        private Variable a_;
+        private Variable b_;
+        private Variable output_;
+
+        public Add(RegisterAllocator allocator, Variable a, Variable b, Variable output)
+        {
+            allocator_ = allocator;
+            a_ = a;
+            b_ = b;
+            output_ = output;
+        }
+
+        public Assembly Generate()
+        {
+            var regA = allocator_.Allocate(a_);
+            var regB = allocator_.Allocate(b_);
+            var asm = new Assembly();
+            asm.Add(a_.Load(regA));
+            asm.Add(b_.Load(regB));
+            asm.Add($"add {regA.Name}, {regB.Name}");
+            regA.Size = output_.Size;
+            asm.Add(output_.Store(regA));
+            allocator_.SetAllocation(regA, output_);
             return asm;
         }
     }

@@ -8,8 +8,14 @@ namespace Reverie.CodeGeneration
         protected Variable B { get; }
         protected Variable Out { get; }
 
-        protected BinaryOp(Variable a, Variable b, Variable output)
+        protected virtual bool HasOutput => true;
+
+        public BinaryOp(Variable a, Variable b, Variable output)
         {
+            if (!HasOutput && output != null)
+            {
+                throw new ArgumentException("This operation does not produce an output value", nameof(output));
+            }
             A = a;
             B = b;
             Out = output;
@@ -103,13 +109,9 @@ namespace Reverie.CodeGeneration
 
     public class Cmp : BinaryOp
     {
-        public Cmp(Variable a, Variable b, Variable output) : base(a, b, output)
-        {
-            if (output != null)
-            {
-                throw new ArgumentException("Compare doesn't produce output value", nameof(output));
-            }
-        }
+        protected override bool HasOutput => false;
+
+        public Cmp(Variable a, Variable b, Variable output) : base(a, b, output) { }
 
         protected override Assembly GenerateOperation(Register a, Register b)
         {
@@ -119,13 +121,9 @@ namespace Reverie.CodeGeneration
 
     public class Test : BinaryOp
     {
-        public Test(Variable a, Variable b, Variable output) : base(a, b, output)
-        {
-            if (output != null)
-            {
-                throw new ArgumentException("Test doesn't produce output value", nameof(output));
-            }
-        }
+        protected override bool HasOutput => false;
+
+        public Test(Variable a, Variable b, Variable output) : base(a, b, output) { }
 
         protected override Assembly GenerateOperation(Register a, Register b)
         {

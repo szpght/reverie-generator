@@ -1,66 +1,25 @@
 ﻿using System;
-using System.Linq;
 using Xunit;
 using Reverie.CodeGeneration;
 
 namespace Reverie.Tests
 {
-    public class VariableTests
+    public class OperationsTests
     {
         [Fact]
-        public void LoadWordStackToEaxHasOneLine()
+        void TestCannotHaveOuptut()
         {
-            var asm = LoadWordStackToEax();
+            var variable = new Variable("", 0, VariableSize.Byte);
 
-            Assert.Single(asm);
+            Assert.Throws<ArgumentException>(() => new Test(variable, variable, variable));
         }
 
         [Fact]
-        public void LoadWordStackToEaxCorrect()
+        void CmpCannotHaveOuptut()
         {
-            var asm = LoadWordStackToEax();
+            var variable = new Variable("", 0, VariableSize.Byte);
 
-            Assert.Equal("mov r0w, WORD [rsp + 4]", asm.Single());
-        }
-
-        [Fact]
-        public void StoreDwordEbxToStackHasTwoLines()
-        {
-            var asm = StoreDwordEbxToStack();
-
-            Assert.Equal(2, asm.Count);
-        }
-
-        [Fact]
-        public void StoreDwordEbxToStackZeroesRegister()
-        {
-            var asm = StoreDwordEbxToStack();
-
-            Assert.Equal("xor r3, r3", asm[0]);
-        }
-
-        [Fact]
-        public void StoreDwordEbxToStackCorrect()
-        {
-            var asm = StoreDwordEbxToStack();
-
-            Assert.Equal("mov DWORD [rsp + 4], r3d", asm[1]);
-        }
-
-        private Assembly LoadWordStackToEax()
-        {
-            var variable = new Variable("rsp", 4, VariableSize.Word);
-            var register = new Register("rax", VariableSize.Word);
-
-            return variable.Load(register);
-        }
-
-        private Assembly StoreDwordEbxToStack()
-        {
-            var variable = new Variable("rsp", 4, VariableSize.Dword);
-            var register = new Register("rbx", VariableSize.Dword);
-
-            return variable.Store(register);
+            Assert.Throws<ArgumentException>(() => new Cmp(variable, variable, variable));
         }
     }
 }

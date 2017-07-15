@@ -99,12 +99,6 @@ namespace Reverie.CodeGeneration
         };
     }
 
-    public interface IOperand
-    {
-        Assembly Load(Register register);
-        Assembly Store(Register register);
-    }
-
     public class Label
     {
         public string Name { get; set; }
@@ -120,7 +114,7 @@ namespace Reverie.CodeGeneration
         }
     }
 
-    public class Variable : IOperand
+    public class Variable
     {
         public Label Base { get; set; }
         public long Offset { get; set; }
@@ -184,7 +178,7 @@ namespace Reverie.CodeGeneration
             return register;
         }
 
-        public void SetAllocation(Register register, Variable variable, Assembly assembly)
+        public void Store(Register register, Variable variable, Assembly assembly)
         {
             register.Size = variable.Size;
             var storeAsm = variable.Store(register);
@@ -198,6 +192,4 @@ namespace Reverie.CodeGeneration
             return new Register(registerName, variable.Size);
         }
     }
-
-
 }

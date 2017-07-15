@@ -1,4 +1,6 @@
-﻿namespace Reverie.CodeGeneration
+﻿using System;
+
+namespace Reverie.CodeGeneration
 {
     public abstract class BinaryOp
     {
@@ -21,7 +23,10 @@
             var regA = ctx.Load(A, asm);
             var regB = ctx.Load(B, asm);
             asm.Add(GenerateOperation(regA, regB));
-            ctx.SetAllocation(regA, Out, asm);
+            if (Out != null)
+            {
+                ctx.Store(regA, Out, asm);
+            }
             return asm;
         }
     }
@@ -93,6 +98,38 @@
         protected override Assembly GenerateOperation(Register a, Register b)
         {
             return new Assembly($"xor {a.FullName}, {b.FullName}");
+        }
+    }
+
+    public class Cmp : BinaryOp
+    {
+        public Cmp(Variable a, Variable b, Variable output) : base(a, b, output)
+        {
+            if (output != null)
+            {
+                throw new ArgumentException("Compare doesn't produce output value", nameof(output));
+            }
+        }
+
+        protected override Assembly GenerateOperation(Register a, Register b)
+        {
+            return new Assembly($"cmp {a.FullName}, {b.FullName}");
+        }
+    }
+
+    public class Test : BinaryOp
+    {
+        public Test(Variable a, Variable b, Variable output) : base(a, b, output)
+        {
+            if (output != null)
+            {
+                throw new ArgumentException("Test doesn't produce output value", nameof(output));
+            }
+        }
+
+        protected override Assembly GenerateOperation(Register a, Register b)
+        {
+            return new Assembly($"test {a.FullName}, {b.FullName}");
         }
     }
 }

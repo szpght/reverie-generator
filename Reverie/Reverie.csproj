@@ -40,7 +40,8 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeGeneration.cs" />
+    <Compile Include="CodeGeneration\Infrastructure.cs" />
+    <Compile Include="CodeGeneration\Operations.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecursiveDictionary.cs" />

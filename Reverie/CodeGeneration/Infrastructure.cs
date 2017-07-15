@@ -167,7 +167,7 @@ namespace Reverie.CodeGeneration
 
     public class Context
     {
-        private static HashSet<string> FreeRegisters =
+        private static readonly HashSet<string> FreeRegisters =
             new HashSet<string>()
             {
                 "r10",
@@ -199,27 +199,5 @@ namespace Reverie.CodeGeneration
         }
     }
 
-    public class Add
-    {
-        private Variable a_;
-        private Variable b_;
-        private Variable output_;
 
-        public Add(Variable a, Variable b, Variable output)
-        {
-            a_ = a;
-            b_ = b;
-            output_ = output;
-        }
-
-        public Assembly Generate(Context ctx)
-        {
-            var asm = new Assembly();
-            var regA = ctx.Load(a_, asm);
-            var regB = ctx.Load(b_, asm);
-            asm.Add($"add {regA.FullName}, {regB.FullName}");
-            ctx.SetAllocation(regA, output_, asm);
-            return asm;
-        }
-    }
 }

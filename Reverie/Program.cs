@@ -21,7 +21,8 @@ namespace Reverie
             output.Size = VariableSize.Word;
             a.Sign = true;
             a.Size = VariableSize.Byte;
-            Console.WriteLine(add.Generate(ctx));
+            var sub = new Sub(a, b, output);
+            Console.WriteLine(sub.Generate(ctx));
 
 
             Console.Read();

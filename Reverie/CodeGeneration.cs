@@ -70,13 +70,14 @@ namespace Reverie.CodeGeneration
 
     public class Register
     {
-        public string Name { get; set; }
-        public string NormalizedName => RegisterNames.ContainsKey(Name) ? RegisterNames[Name] : Name;
+        public string FullName { get; set; }
+        public string Name => ToString();
+        public string NormalizedName => RegisterNames.ContainsKey(FullName) ? RegisterNames[FullName] : FullName;
         public VariableSize Size { get; set; }
 
         public Register(string register, VariableSize size)
         {
-            Name = register;
+            FullName = register;
             Size = size;
         }
 
@@ -137,9 +138,11 @@ namespace Reverie.CodeGeneration
         public Assembly Load(Register register)
         {
             string movInstruction = "mov";
+            string registerName = register.FullName;
             if (Size == VariableSize.Qword || Size == VariableSize.Dword && !Sign)
             {
                 movInstruction = "mov";
+                registerName = register.Name;
             }
             else if (!Sign)
             {
@@ -153,7 +156,7 @@ namespace Reverie.CodeGeneration
             {
                 movInstruction = "movsxd";
             }
-            return new Assembly($"{movInstruction} {register}, {Size.Asm()} [{Base} + {Offset}]");
+            return new Assembly($"{movInstruction} {registerName}, {Size.Asm()} [{Base} + {Offset}]");
         }
 
         public Assembly Store(Register register)
@@ -214,7 +217,7 @@ namespace Reverie.CodeGeneration
             var asm = new Assembly();
             var regA = ctx.Load(a_, asm);
             var regB = ctx.Load(b_, asm);
-            asm.Add($"add {regA.Name}, {regB.Name}");
+            asm.Add($"add {regA.FullName}, {regB.FullName}");
             ctx.SetAllocation(regA, output_, asm);
             return asm;
         }

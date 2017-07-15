@@ -15,9 +15,14 @@ namespace Reverie
             var a = new Variable("rsp", 8, VariableSize.Dword);
             var b = new Variable("rsp", 16, VariableSize.Qword);
             var output = new Variable("rsp", 24, VariableSize.Qword);
-            var alloc = new RegisterAllocator();
-            var add = new Add(alloc, a, b, output);
-            Console.WriteLine(add.Generate());
+            var ctx = new Context();
+            var add = new Add(a, b, output);
+            Console.WriteLine(add.Generate(ctx));
+            output.Size = VariableSize.Word;
+            a.Sign = true;
+            a.Size = VariableSize.Byte;
+            Console.WriteLine(add.Generate(ctx));
+
 
             Console.Read();
         }

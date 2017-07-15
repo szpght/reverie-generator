@@ -123,24 +123,37 @@ namespace Reverie.CodeGeneration
     {
         public Label Base { get; set; }
         public long Offset { get; set; }
+        public bool Sign { get; set; }
         public VariableSize Size { get; set; }
 
-        public Variable(string baseLabel, long offset, VariableSize size)
+        public Variable(string baseLabel, long offset, VariableSize size, bool sign = false)
         {
             Base = new Label(baseLabel);
             Offset = offset;
             Size = size;
+            Sign = sign;
         }
 
         public Assembly Load(Register register)
         {
-            var asm = new Assembly();
-            if (Size != VariableSize.Qword)
+            string movInstruction = "mov";
+            if (Size == VariableSize.Qword || Size == VariableSize.Dword && !Sign)
             {
-                asm.Add($"xor {register.NormalizedName}, {register.NormalizedName}");
+                movInstruction = "mov";
             }
-            asm.Add($"mov {register}, {Size.Asm()} [{Base} + {Offset}]");
-            return asm;
+            else if (!Sign)
+            {
+                movInstruction = "movzx";
+            }
+            else if (Size == VariableSize.Byte && Sign || Size == VariableSize.Word && Sign)
+            {
+                movInstruction = "movsx";
+            }
+            else if (Size == VariableSize.Dword && Sign)
+            {
+                movInstruction = "movsxd";
+            }
+            return new Assembly($"{movInstruction} {register}, {Size.Asm()} [{Base} + {Offset}]");
         }
 
         public Assembly Store(Register register)
@@ -149,65 +162,60 @@ namespace Reverie.CodeGeneration
         }
     }
 
-    public class RegisterAllocator
+    public class Context
     {
-        public Dictionary<Variable, Register> Allocations { get; set; }
-            = new Dictionary<Variable, Register>();
-
         private static HashSet<string> FreeRegisters =
             new HashSet<string>()
             {
-                "r15",
-                "r14",
-                "r13",
-                "r12"
+                "r10",
+                "r11",
+                "rbx",
+                "rax"
             };
 
-        public Register Allocate(Variable variable)
+        public Register Load(Variable variable, Assembly assembly)
         {
-            if (Allocations.ContainsKey(variable))
-            {
-                return Allocations[variable];
-            }
-            var registerName = FreeRegisters.First();
-            FreeRegisters.Remove(registerName);
-            var register = new Register(registerName, variable.Size);
-            Allocations[variable] = register;
+            var register = AllocateRegister(variable, assembly);
+            var loadAsm = variable.Load(register);
+            assembly.Add(loadAsm);
             return register;
         }
 
-        public void SetAllocation(Register register, Variable variable)
+        public void SetAllocation(Register register, Variable variable, Assembly assembly)
         {
-            Allocations[variable] = register;
+            register.Size = variable.Size;
+            var storeAsm = variable.Store(register);
+            assembly.Add(storeAsm);
+        }
+
+        private Register AllocateRegister(Variable variable, Assembly assembly)
+        {
+            var registerName = FreeRegisters.First();
+            FreeRegisters.Remove(registerName);
+            return new Register(registerName, variable.Size);
         }
     }
 
     public class Add
     {
-        private RegisterAllocator allocator_;
         private Variable a_;
         private Variable b_;
         private Variable output_;
 
-        public Add(RegisterAllocator allocator, Variable a, Variable b, Variable output)
+        public Add(Variable a, Variable b, Variable output)
         {
-            allocator_ = allocator;
             a_ = a;
             b_ = b;
             output_ = output;
         }
 
-        public Assembly Generate()
+        public Assembly Generate(Context ctx)
         {
-            var regA = allocator_.Allocate(a_);
-            var regB = allocator_.Allocate(b_);
             var asm = new Assembly();
-            asm.Add(a_.Load(regA));
-            asm.Add(b_.Load(regB));
+            var regA = ctx.Load(a_, asm);
+            var regB = ctx.Load(b_, asm);
             asm.Add($"add {regA.Name}, {regB.Name}");
-            regA.Size = output_.Size;
-            asm.Add(output_.Store(regA));
-            allocator_.SetAllocation(regA, output_);
+            ctx.SetAllocation(regA, output_, asm);
             return asm;
         }
     }

@@ -86,6 +86,11 @@ namespace Reverie.CodeGeneration
             return NormalizedName + Size.RegisterSuffix();
         }
 
+        public bool TheSameAs(Register register)
+        {
+            return NormalizedName == register.NormalizedName;
+        }
+
         private static readonly Dictionary<string, string> RegisterNames = new Dictionary<string, string>()
         {
             {"rax", "r0"},
@@ -161,35 +166,87 @@ namespace Reverie.CodeGeneration
 
     public class Context
     {
-        private static readonly HashSet<string> FreeRegisters =
-            new HashSet<string>()
-            {
-                "r10",
-                "r11",
-                "rbx",
-                "rax"
-            };
+        private readonly List<RegisterVariablePair> Allocations = new List<RegisterVariablePair>();
+        private readonly HashSet<string> FreeRegisters;
+
+        public Context()
+        {
+            FreeRegisters = FreshFreeRegisters();
+        }
 
         public Register Load(Variable variable, Assembly assembly)
         {
-            var register = AllocateRegister(variable, assembly);
-            var loadAsm = variable.Load(register);
-            assembly.Add(loadAsm);
+            var pair = Allocations.SingleOrDefault(x => x.Variable == variable);
+            if (pair != null)
+            {
+                Allocations.Remove(pair);
+                Allocations.Add(pair);
+                return pair.Register;
+            }
+            var register = GetFreeRegister(variable.Size);
+            var loadAssembly = variable.Load(register);
+            assembly.Add(loadAssembly);
+            pair = new RegisterVariablePair(register, variable);
+            Allocations.Add(pair);
             return register;
         }
 
         public void Store(Register register, Variable variable, Assembly assembly)
         {
             register.Size = variable.Size;
-            var storeAsm = variable.Store(register);
-            assembly.Add(storeAsm);
+            var storeAssembly = variable.Store(register);
+            assembly.Add(storeAssembly);
+
+            var varPair = Allocations.SingleOrDefault(x => x.Variable == variable);
+            if (varPair != null)
+            {
+                FreeRegisters.Add(varPair.Register.NormalizedName);
+                Allocations.Remove(varPair);
+            }
+
+            Allocations.RemoveAll(x => x.Register.TheSameAs(register));
+            var pair = new RegisterVariablePair(register, variable);
+            Allocations.Add(pair);
         }
 
-        private Register AllocateRegister(Variable variable, Assembly assembly)
+        private Register GetFreeRegister(VariableSize size)
         {
-            var registerName = FreeRegisters.First();
-            FreeRegisters.Remove(registerName);
-            return new Register(registerName, variable.Size);
+            string name;
+            if (FreeRegisters.Any())
+            {
+                name = FreeRegisters.First();
+                FreeRegisters.Remove(name);
+            }
+            else
+            {
+                var pair = Allocations.First();
+                Allocations.Remove(pair);
+                name = pair.Register.NormalizedName;
+            }
+            return new Register(name, size);
+        }
+
+        private class RegisterVariablePair
+        {
+            public Register Register { get; set; }
+            public Variable Variable { get; set; }
+
+            public RegisterVariablePair(Register register, Variable variable)
+            {
+                Register = register;
+                Variable = variable;
+            }
+        }
+
+        private HashSet<string> FreshFreeRegisters()
+        {
+            return new HashSet<string>()
+            {
+                "r10",
+                "r11",
+                "rbx",
+                "rax"
+            };
         }
     }
 }

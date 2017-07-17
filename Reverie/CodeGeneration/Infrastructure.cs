@@ -173,10 +173,12 @@ namespace Reverie.CodeGeneration
     {
         private readonly List<RegisterVariablePair> Allocations = new List<RegisterVariablePair>();
         private readonly List<string> FreeRegisters;
+        private readonly List<string> FreeSavedRegisters;
 
         public Context()
         {
             FreeRegisters = FreshFreeRegisters();
+            FreeSavedRegisters = FreshSavedRegisters();
         }
 
         public Register Load(Variable variable, Assembly assembly)
@@ -222,6 +224,11 @@ namespace Reverie.CodeGeneration
                 name = FreeRegisters.Last();
                 FreeRegisters.Remove(name);
             }
+            else if (FreeSavedRegisters.Any())
+            {
+                name = FreeSavedRegisters.Last();
+                FreeSavedRegisters.Remove(name);
+            }
             else
             {
                 var pair = Allocations.First();
@@ -229,6 +236,19 @@ namespace Reverie.CodeGeneration
                 name = pair.Register.NormalizedName;
             }
             return new Register(name, size);
+        }
+
+        public Context GetCopy()
+        {
+            return new Context(Allocations, FreeRegisters, FreeSavedRegisters);
+        }
+
+        private Context(List<RegisterVariablePair> allocations, List<string> freeRegisters,
+            List<string> freeSavedRegisters)
+        {
+            Allocations = new List<RegisterVariablePair>(allocations);
+            FreeRegisters = new List<string>(freeRegisters);
+            FreeSavedRegisters = new List<string>(freeSavedRegisters);
         }
 
         private class RegisterVariablePair
@@ -247,10 +267,27 @@ namespace Reverie.CodeGeneration
         {
             return new List<string>()
             {
+                "rax",
+                "rcd",
+                "rdx",
+                "rsi",
+                "rdi",
+                "r8",
+                "r9",
                 "r10",
                 "r11",
+            };
+        }
+
+        private List<string> FreshSavedRegisters()
+        {
+            return new List<string>()
+            {
                 "rbx",
-                "rax"
+                "r12",
+                "r13",
+                "r14",
+                "r15",
             };
         }
     }

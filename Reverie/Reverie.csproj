@@ -41,8 +41,13 @@
     <Reference Include="Microsoft.CSharp" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="CodeGeneration\Infrastructure.cs" />
+    <Compile Include="CodeGeneration\Assembly.cs" />
+    <Compile Include="CodeGeneration\Context.cs" />
+    <Compile Include="CodeGeneration\Label.cs" />
     <Compile Include="CodeGeneration\Operations.cs" />
+    <Compile Include="CodeGeneration\Register.cs" />
+    <Compile Include="CodeGeneration\Variable.cs" />
+    <Compile Include="CodeGeneration\VariableSize.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="RecursiveDictionary.cs" />

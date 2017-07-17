@@ -70,15 +70,20 @@ namespace Reverie.CodeGeneration
 
     public class Register
     {
-        public string FullName { get; set; }
+        public string FullName { get; }
         public string Name => ToString();
         public string NormalizedName => RegisterNames.ContainsKey(FullName) ? RegisterNames[FullName] : FullName;
-        public VariableSize Size { get; set; }
+        public VariableSize Size { get; }
 
         public Register(string register, VariableSize size)
         {
             FullName = register;
             Size = size;
+        }
+
+        public Register WithSize(VariableSize size)
+        {
+            return new Register(FullName, size);
         }
 
         public override string ToString()
@@ -106,7 +111,7 @@ namespace Reverie.CodeGeneration
 
     public class Label
     {
-        public string Name { get; set; }
+        public string Name { get; }
 
         public Label(string name)
         {
@@ -193,7 +198,7 @@ namespace Reverie.CodeGeneration
 
         public void Store(Register register, Variable variable, Assembly assembly)
         {
-            register.Size = variable.Size;
+            register = register.WithSize(variable.Size);
             var storeAssembly = variable.Store(register);
             assembly.Add(storeAssembly);
 
@@ -228,8 +233,8 @@ namespace Reverie.CodeGeneration
 
         private class RegisterVariablePair
         {
-            public Register Register { get; set; }
-            public Variable Variable { get; set; }
+            public Register Register { get; }
+            public Variable Variable { get; }
 
             public RegisterVariablePair(Register register, Variable variable)
             {

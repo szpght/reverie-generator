@@ -172,7 +172,7 @@ namespace Reverie.CodeGeneration
     public class Context
     {
         private readonly List<RegisterVariablePair> Allocations = new List<RegisterVariablePair>();
-        private readonly HashSet<string> FreeRegisters;
+        private readonly List<string> FreeRegisters;
 
         public Context()
         {
@@ -219,7 +219,7 @@ namespace Reverie.CodeGeneration
             string name;
             if (FreeRegisters.Any())
             {
-                name = FreeRegisters.First();
+                name = FreeRegisters.Last();
                 FreeRegisters.Remove(name);
             }
             else
@@ -243,9 +243,9 @@ namespace Reverie.CodeGeneration
             }
         }
 
-        private HashSet<string> FreshFreeRegisters()
+        private List<string> FreshFreeRegisters()
         {
-            return new HashSet<string>()
+            return new List<string>()
             {
                 "r10",
                 "r11",

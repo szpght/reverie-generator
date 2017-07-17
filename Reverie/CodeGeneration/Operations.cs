@@ -2,7 +2,12 @@
 
 namespace Reverie.CodeGeneration
 {
-    public abstract class BinaryOp
+    public interface ICode
+    {
+        Assembly Generate(Context ctx);
+    }
+
+    public abstract class BinaryOp : ICode
     {
         protected Variable A { get; }
         protected Variable B { get; }

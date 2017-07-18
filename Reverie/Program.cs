@@ -25,6 +25,15 @@ namespace Reverie
             Console.WriteLine(sub.Generate(ctx));
 
 
+            var r1 = new Relation() {Negated = false, Type = RelationType.And};
+            var r2 = new Relation() {Negated = false, Type = RelationType.And, Left = new Lol(), Right = new Lol()};
+            var r3 = new Relation() {Negated = false, Type = RelationType.And, Left = new Lol(), Right = new Lol()};
+            r1.Left = r2;
+            r1.Right = r3;
+            
+            PredicateConverter.Convert(r1);
+
+
             Console.Read();
         }
     }

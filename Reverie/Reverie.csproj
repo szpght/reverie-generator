@@ -42,6 +42,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="CodeGeneration\Assembly.cs" />
+    <Compile Include="CodeGeneration\CodeBlock.cs" />
     <Compile Include="CodeGeneration\Context.cs" />
     <Compile Include="CodeGeneration\Label.cs" />
     <Compile Include="CodeGeneration\Operations.cs" />

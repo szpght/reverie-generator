@@ -15,7 +15,7 @@ namespace Reverie.CodeGeneration
 
         protected virtual bool HasOutput => true;
 
-        public BinaryOp(Variable a, Variable b, Variable output)
+        protected BinaryOp(Variable a, Variable b, Variable output)
         {
             if (!HasOutput && output != null)
             {
@@ -133,6 +133,56 @@ namespace Reverie.CodeGeneration
         protected override Assembly GenerateOperation(Register a, Register b)
         {
             return new Assembly($"test {a.FullName}, {b.FullName}");
+        }
+    }
+
+    public interface IPredicate
+    {
+        bool Negated { get; set; }
+    }
+
+    public enum RelationType
+    {
+        And,
+        Or,
+    }
+
+    public class Relation : IPredicate
+    {
+        public IPredicate Left { get; set; }
+        public IPredicate Right { get; set; }
+        public bool Negated { get; set; }
+        public RelationType Type { get; set; }
+    }
+
+    public class Lol : IPredicate
+    {
+        public bool Negated { get; set; }
+    }
+
+    public static class PredicateConverter
+    {
+        public static void Convert(IPredicate predicate)
+        {
+            var relation = predicate as Relation;
+            if (relation == null)
+            {
+                return;
+            }
+            if (relation.Type == RelationType.And)
+            {
+                relation.Type = RelationType.Or;
+                if (relation.Left != null)
+                {
+                    relation.Left.Negated = !relation.Left.Negated;
+                }
+                if (relation.Right != null)
+                {
+                    relation.Right.Negated = !relation.Right.Negated;
+                }
+            }
+            Convert(relation.Left);
+            Convert(relation.Right);
         }
     }
 }

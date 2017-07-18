@@ -7,13 +7,19 @@ namespace Reverie.CodeGeneration
         Assembly Generate(Context ctx);
     }
 
-    public abstract class BinaryOp : ICode
+    public interface IBinaryOp
     {
-        protected Variable A { get; }
-        protected Variable B { get; }
-        protected Variable Out { get; }
+        Variable A { get; }
+        Variable B { get; }
+    }
 
-        protected virtual bool HasOutput => true;
+    public abstract class BinaryOp : ICode, IBinaryOp
+    {
+        public Variable A { get; }
+        public Variable B { get; }
+        public Variable Out { get; }
+
+        public virtual bool HasOutput => true;
 
         protected BinaryOp(Variable a, Variable b, Variable output)
         {
@@ -114,7 +120,7 @@ namespace Reverie.CodeGeneration
 
     public class Cmp : BinaryOp
     {
-        protected override bool HasOutput => false;
+        public override bool HasOutput => false;
 
         public Cmp(Variable a, Variable b, Variable output) : base(a, b, output) { }
 
@@ -126,7 +132,7 @@ namespace Reverie.CodeGeneration
 
     public class Test : BinaryOp
     {
-        protected override bool HasOutput => false;
+        public override bool HasOutput => false;
 
         public Test(Variable a, Variable b, Variable output) : base(a, b, output) { }
 
@@ -183,6 +189,32 @@ namespace Reverie.CodeGeneration
             }
             Convert(relation.Left);
             Convert(relation.Right);
+        }
+    }
+
+    public class Greater : BinaryOp, IPredicate
+    {
+        public bool Negated { get; set; }
+
+        public Greater(Variable a, Variable b) : base(a, b, null) { }
+
+        public string Instruction()
+        {
+            var sign = A.Sign || B.Sign;
+            if (!Negated && !sign)
+                return "ja";
+            if (!Negated && sign)
+                return "jg";
+            if (Negated && !sign)
+                return "jbe";
+            if (Negated && sign)
+                return "jle";
+            throw new Exception("runtime is broken");
+        }
+
+        protected override Assembly GenerateOperation(Register a, Register b)
+        {
+            return new Assembly($"cmp {a.FullName}, {b.FullName}");
         }
     }
 }

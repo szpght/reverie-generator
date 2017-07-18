@@ -7,5 +7,9 @@ namespace Reverie.CodeGeneration
         public IList<ICode> Code { get; set; }
         public Variable Result { get; set; }
 
+        public CodeBlock()
+        {
+            
+        }
     }
 }

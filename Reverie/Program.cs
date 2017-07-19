@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using Microsoft.Build.Tasks;
 using Reverie.CodeGeneration;
 
 namespace Reverie
@@ -26,15 +27,14 @@ namespace Reverie
             //Console.WriteLine(sub.Generate(ctx));
 
 
-            var r1 = new Relation() {Negated = false, Type = RelationType.And};
-            var r2 = new Relation() {Negated = false, Type = RelationType.And, Left = new Lol(), Right = new Lol()};
-            var r3 = new Relation() {Negated = false, Type = RelationType.And, Left = new Lol(), Right = new Lol()};
-            r1.Left = r2;
-            r1.Right = r3;
-
             var p1 = new Greater(a, b);
+            var p2 = new Greater(b, output);
+            var p3 = new Greater(a, output);
+            var p4 = new Relation(p2, p3, RelationType.And);
+            var p5 = new Relation(p1, p4, RelationType.Or);
+            var P = p5;
             var @if = new If();
-            @if.Predicate = p1;
+            @if.Predicate = P;
             @if.Code = new CodeBlock(new List<ICode>() { add }, null);
             @if.Else = new CodeBlock(new List<ICode>() { sub }, null);
             Console.Out.WriteLine(@if.Generate(ctx));

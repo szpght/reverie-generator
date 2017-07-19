@@ -157,46 +157,38 @@ namespace Reverie.CodeGeneration
 
     public class Relation : IPredicate
     {
-        public IPredicate Left { get; set; }
-        public IPredicate Right { get; set; }
+        public IPredicate Left { get; }
+        public IPredicate Right { get; }
         public bool Negated { get; set; }
-        public RelationType Type { get; set; }
+        public RelationType Type { get; private set; }
         public string Jump => null;
+
+        public Relation(IPredicate left, IPredicate right, RelationType type, bool negated = false)
+        {
+            Left = left;
+            Right = right;
+            Type = type;
+            Negated = negated;
+        }
+
+        public void Convert()
+        {
+            if (Type == RelationType.And)
+            {
+                Type = RelationType.Or;
+                Negated = !Negated;
+                Left.Negated = !Left.Negated;
+                Right.Negated = !Right.Negated;
+            }
+            var left = Left as Relation;
+            left?.Convert();
+            var right = Left as Relation;
+            right?.Convert();
+        }
 
         public Assembly Generate(Context ctx)
         {
             return new Assembly();
-        }
-    }
-
-    public class Lol : IPredicate
-    {
-        public bool Negated { get; set; }
-        public string Jump => null;
-
-        public Assembly Generate(Context ctx)
-        {
-            return new Assembly();
-        }
-    }
-
-    public static class PredicateConverter
-    {
-        public static void Convert(IPredicate predicate)
-        {
-            var relation = predicate as Relation;
-            if (relation == null)
-            {
-                return;
-            }
-            if (relation.Type == RelationType.And)
-            {
-                relation.Type = RelationType.Or;
-                relation.Left.Negated = !relation.Left.Negated;
-                relation.Right.Negated = !relation.Right.Negated;
-            }
-            Convert(relation.Left);
-            Convert(relation.Right);
         }
     }
 
@@ -238,6 +230,8 @@ namespace Reverie.CodeGeneration
         public Assembly Generate(Context ctx)
         {
             var asm = new Assembly();
+            var relation = Predicate as Relation;
+            relation?.Convert();
             TraverseAndGenerate(Predicate, ctx, asm);
 
             var elseCtx = ctx.GetCopy();
@@ -263,6 +257,8 @@ namespace Reverie.CodeGeneration
             }
             else
             {
+                var lol = predicate as BinaryOp;
+                output.Add($"zmienne {lol.A.Offset} {lol.B.Offset}");
                 output.Add(predicate.Generate(ctx));
                 output.Add($"{predicate.Jump} {Code.BeginLabel}");
             }

@@ -178,14 +178,8 @@ namespace Reverie.CodeGeneration
             if (relation.Type == RelationType.And)
             {
                 relation.Type = RelationType.Or;
-                if (relation.Left != null)
-                {
-                    relation.Left.Negated = !relation.Left.Negated;
-                }
-                if (relation.Right != null)
-                {
-                    relation.Right.Negated = !relation.Right.Negated;
-                }
+                relation.Left.Negated = !relation.Left.Negated;
+                relation.Right.Negated = !relation.Right.Negated;
             }
             Convert(relation.Left);
             Convert(relation.Right);
@@ -215,6 +209,23 @@ namespace Reverie.CodeGeneration
         protected override Assembly GenerateOperation(Register a, Register b)
         {
             return new Assembly($"cmp {a.FullName}, {b.FullName}");
+        }
+    }
+
+    public class If : ICode
+    {
+        public IPredicate Predicate { get; set; }
+        public CodeBlock Code { get; set; }
+        public CodeBlock Else { get; set; }
+
+        public Assembly Generate(Context ctx)
+        {
+            var relation = Predicate as Relation;
+            if (relation != null)
+            {
+                G
+            }
+            
         }
     }
 }

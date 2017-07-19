@@ -1,6 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using Microsoft.Build.Tasks;
+﻿using System.Collections.Generic;
 
 namespace Reverie.CodeGeneration
 {

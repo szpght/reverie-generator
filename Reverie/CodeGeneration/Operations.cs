@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Diagnostics.Eventing.Reader;
 
 namespace Reverie.CodeGeneration
 {
@@ -142,9 +143,10 @@ namespace Reverie.CodeGeneration
         }
     }
 
-    public interface IPredicate
+    public interface IPredicate : ICode
     {
         bool Negated { get; set; }
+        string Jump { get; }
     }
 
     public enum RelationType
@@ -159,11 +161,23 @@ namespace Reverie.CodeGeneration
         public IPredicate Right { get; set; }
         public bool Negated { get; set; }
         public RelationType Type { get; set; }
+        public string Jump => null;
+
+        public Assembly Generate(Context ctx)
+        {
+            return new Assembly();
+        }
     }
 
     public class Lol : IPredicate
     {
         public bool Negated { get; set; }
+        public string Jump => null;
+
+        public Assembly Generate(Context ctx)
+        {
+            return new Assembly();
+        }
     }
 
     public static class PredicateConverter
@@ -192,18 +206,21 @@ namespace Reverie.CodeGeneration
 
         public Greater(Variable a, Variable b) : base(a, b, null) { }
 
-        public string Instruction()
+        public string Jump
         {
-            var sign = A.Sign || B.Sign;
-            if (!Negated && !sign)
-                return "ja";
-            if (!Negated && sign)
-                return "jg";
-            if (Negated && !sign)
-                return "jbe";
-            if (Negated && sign)
-                return "jle";
-            throw new Exception("runtime is broken");
+            get
+            {
+                var sign = A.Sign || B.Sign;
+                if (!Negated && !sign)
+                    return "ja";
+                if (!Negated && sign)
+                    return "jg";
+                if (Negated && !sign)
+                    return "jbe";
+                if (Negated && sign)
+                    return "jle";
+                throw new Exception("runtime is broken");
+            }
         }
 
         protected override Assembly GenerateOperation(Register a, Register b)
@@ -220,12 +237,35 @@ namespace Reverie.CodeGeneration
 
         public Assembly Generate(Context ctx)
         {
-            var relation = Predicate as Relation;
+            var asm = new Assembly();
+            TraverseAndGenerate(Predicate, ctx, asm);
+
+            var elseCtx = ctx.GetCopy();
+
+            if (Else != null)
+            {
+                asm.Add(Else.Generate(elseCtx));
+                asm.Add($"jmp {Code.EndLabel}");
+            }
+            asm.Add(Code.Generate(ctx));
+
+            ctx.Join(ctx, elseCtx);
+            return asm;
+        }
+
+        private void TraverseAndGenerate(IPredicate predicate, Context ctx, Assembly output)
+        {
+            var relation = predicate as Relation;
             if (relation != null)
             {
-                G
+                TraverseAndGenerate(relation.Left, ctx, output);
+                TraverseAndGenerate(relation.Right, ctx, output);
             }
-            
+            else
+            {
+                output.Add(predicate.Generate(ctx));
+                output.Add($"{predicate.Jump} {Code.BeginLabel}");
+            }
         }
     }
 }

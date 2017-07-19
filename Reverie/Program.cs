@@ -1,5 +1,6 @@
 ﻿using Newtonsoft.Json;
 using System;
+using System.Collections.Generic;
 using System.IO;
 using Reverie.CodeGeneration;
 
@@ -17,12 +18,12 @@ namespace Reverie
             var output = new Variable("rsp", 24, VariableSize.Qword);
             var ctx = new Context();
             var add = new Add(a, b, output);
-            Console.WriteLine(add.Generate(ctx));
+            //Console.WriteLine(add.Generate(ctx));
             output.Size = VariableSize.Word;
             a.Sign = true;
             a.Size = VariableSize.Byte;
             var sub = new Sub(a, b, output);
-            Console.WriteLine(sub.Generate(ctx));
+            //Console.WriteLine(sub.Generate(ctx));
 
 
             var r1 = new Relation() {Negated = false, Type = RelationType.And};
@@ -30,8 +31,13 @@ namespace Reverie
             var r3 = new Relation() {Negated = false, Type = RelationType.And, Left = new Lol(), Right = new Lol()};
             r1.Left = r2;
             r1.Right = r3;
-            
-            PredicateConverter.Convert(r1);
+
+            var p1 = new Greater(a, b);
+            var @if = new If();
+            @if.Predicate = p1;
+            @if.Code = new CodeBlock(new List<ICode>() { add }, null);
+            @if.Else = new CodeBlock(new List<ICode>() { sub }, null);
+            Console.Out.WriteLine(@if.Generate(ctx));
 
 
             Console.Read();

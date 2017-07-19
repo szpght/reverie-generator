@@ -1,6 +1,6 @@
 ﻿namespace Reverie.CodeGeneration
 {
-    public class Label
+    public class Label : ICode
     {
         public string Name { get; }
         public bool Local { get; }
@@ -23,6 +23,11 @@
         public override string ToString()
         {
             return Name;
+        }
+
+        public Assembly Generate(Context ctx)
+        {
+            return new Assembly(Declaration);
         }
 
         public static Label New(bool local)

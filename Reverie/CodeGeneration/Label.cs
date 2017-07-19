@@ -27,7 +27,7 @@
 
         public static Label New(bool local)
         {
-            var label = new Label("L" + Count);
+            var label = new Label("L" + Count, local);
             Count += 1;
             return label;
         }

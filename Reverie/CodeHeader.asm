@@ -1,41 +1,33 @@
-﻿%define r0 rax
-%define r0d eax
-%define r0w ax
-%define r0b al
+﻿%define raxd eax
+%define raxw ax
+%define raxb al
 
-%define r1 rcx
-%define r1d ecx
-%define r1w cx
-%define r1b cl
+%define rcxd ecx
+%define rcxw cx
+%define rcxb cl
 
-%define r2 rdx
-%define r2d edx
-%define r2w dx
-%define r2b dl
+%define rdxd edx
+%define rdxw dx
+%define rdxb dl
 
-%define r3 rbx
-%define r3d ebx
-%define r3w bx
-%define r3b bl
+%define rbxd ebx
+%define rbxw bx
+%define rbxb bl
 
-%define r4 rsp
-%define r4d esp
-%define r4w sp
-%define r4b spl
+%define rspd esp
+%define rspw sp
+%define rspb spl
 
-%define r5 rbp
-%define r5d ebp
-%define r5w bp
-%define r5b bpl
+%define rbpd ebp
+%define rbpw bp
+%define rbpb bpl
 
-%define r6 rsi
-%define r6d esi
-%define r6w si
-%define r6b sil
+%define rsid esi
+%define rsiw si
+%define rsib sil
 
-%define r7 rdi
-%define r7d edi
-%define r7w di
-%define r7b dil
+%define rdid edi
+%define rdiw di
+%define rdib dil
 
 [BITS 64]

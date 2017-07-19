@@ -41,7 +41,7 @@ namespace Reverie.CodeGeneration
             var varPair = Allocations.SingleOrDefault(x => x.Variable == variable);
             if (varPair != null)
             {
-                FreeRegisters.Add(varPair.Register.NormalizedName);
+                FreeRegisters.Add(varPair.Register.FullName);
                 Allocations.Remove(varPair);
             }
 
@@ -67,7 +67,7 @@ namespace Reverie.CodeGeneration
             {
                 var pair = Allocations.First();
                 Allocations.Remove(pair);
-                name = pair.Register.NormalizedName;
+                name = pair.Register.FullName;
             }
             return new Register(name, size);
         }

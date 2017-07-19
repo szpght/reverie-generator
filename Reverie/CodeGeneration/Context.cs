@@ -5,9 +5,9 @@ namespace Reverie.CodeGeneration
 {
     public class Context
     {
-        private readonly List<RegisterVariablePair> Allocations = new List<RegisterVariablePair>();
-        private readonly List<string> FreeRegisters;
-        private readonly List<string> FreeSavedRegisters;
+        private List<RegisterVariablePair> Allocations = new List<RegisterVariablePair>();
+        private List<string> FreeRegisters;
+        private List<string> FreeSavedRegisters;
 
         public Context()
         {
@@ -75,6 +75,42 @@ namespace Reverie.CodeGeneration
         public Context GetCopy()
         {
             return new Context(Allocations, FreeRegisters, FreeSavedRegisters);
+        }
+
+        public void Join(Context a, Context b)
+        {
+            JoinAllocations(a, b);
+            JoinFreeSavedRegisters(a, b);
+            JoinFreeRegisters(a, b);
+        }
+
+        private void JoinFreeRegisters(Context a, Context b)
+        {
+            FreeRegisters = FreshFreeRegisters()
+                .Union(FreshSavedRegisters())
+                .Except(FreeSavedRegisters)
+                .Except(Allocations.Select(x => x.Register.FullName))
+                .ToList();
+        }
+
+        private void JoinFreeSavedRegisters(Context a, Context b)
+        {
+            FreeSavedRegisters = a.FreeSavedRegisters.
+                Intersect(b.FreeSavedRegisters)
+                .ToList();
+        }
+
+        private void JoinAllocations(Context a, Context b)
+        {
+            var newAllocations = new List<RegisterVariablePair>();
+            foreach (var pair in a.Allocations)
+            {
+                if (b.Allocations.Any(x => x.Register.TheSameAs(pair.Register) && x.Variable == pair.Variable))
+                {
+                    newAllocations.Add(pair);
+                }
+            }
+            Allocations = newAllocations;
         }
 
         private Context(List<RegisterVariablePair> allocations, List<string> freeRegisters,

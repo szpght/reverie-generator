@@ -290,9 +290,25 @@ namespace Reverie.CodeGeneration
 
     public class If : ICode
     {
-        public IPredicate Predicate { get; set; }
-        public CodeBlock Code { get; set; }
-        public CodeBlock Else { get; set; }
+        public IPredicate Predicate { get; }
+        public CodeBlock Code { get; }
+        public CodeBlock Else { get; }
+
+        private IPredicate LastPredicate;
+
+        public If(IPredicate predicate, CodeBlock code, CodeBlock @else)
+        {
+            Predicate = predicate;
+            Code = code;
+            if (@else != null)
+            {
+                Else = @else;
+            }
+            else
+            {
+                Else = new CodeBlock();
+            }
+        }
 
         public Assembly Generate(Context ctx)
         {
@@ -303,12 +319,18 @@ namespace Reverie.CodeGeneration
 
             var elseCtx = ctx.GetCopy();
 
-            if (Else != null)
+            if (LastPredicate.JumpToElse)
+            {
+                asm.Add(Code.Generate(ctx));
+                asm.Add($"jmp {Else.EndLabel}");
+                asm.Add(Else.Generate(elseCtx));
+            }
+            else
             {
                 asm.Add(Else.Generate(elseCtx));
                 asm.Add($"jmp {Code.EndLabel}");
+                asm.Add(Code.Generate(ctx));
             }
-            asm.Add(Code.Generate(ctx));
 
             ctx.Join(ctx, elseCtx);
             return asm;
@@ -324,6 +346,7 @@ namespace Reverie.CodeGeneration
             }
             else
             {
+                LastPredicate = predicate;
                 output.Add(predicate.Generate(ctx));
                 var labelToJump = predicate.JumpToElse ? Else.BeginLabel : Code.BeginLabel;
                 output.Add($"{predicate.Jump} {labelToJump}");

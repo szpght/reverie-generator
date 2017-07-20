@@ -9,6 +9,10 @@ namespace Reverie.CodeGeneration
         public Label BeginLabel { get; set; }
         public Label EndLabel { get; set; }
 
+        public CodeBlock() : this(new List<ICode>(), null)
+        {
+        }
+
         public CodeBlock(IList<ICode> code, Variable result)
         {
             Code = code;

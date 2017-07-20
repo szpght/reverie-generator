@@ -1,6 +1,5 @@
 ﻿using System;
 using System.Collections.Generic;
-using System.Diagnostics.Eventing.Reader;
 using System.Linq;
 
 namespace Reverie.CodeGeneration
@@ -10,13 +9,7 @@ namespace Reverie.CodeGeneration
         Assembly Generate(Context ctx);
     }
 
-    public interface IBinaryOp
-    {
-        Variable A { get; }
-        Variable B { get; }
-    }
-
-    public abstract class BinaryOp : ICode, IBinaryOp
+    public abstract class BinaryOp : ICode
     {
         public Variable A { get; }
         public Variable B { get; }
@@ -185,7 +178,7 @@ namespace Reverie.CodeGeneration
          * 3. po przejściu całego drzewa mam tylko ory i nory
          * 4. przechodzę drzewo znowu i jeśli spotykam nora to neguję JumpToElse wszystkim wychodzącym z niego liściom
          */
-        public void Convert()
+        public void NormalizeToOr()
         {
             var relations = new List<Relation>();
             MakePostOrderListOfRelations(relations);
@@ -277,6 +270,7 @@ namespace Reverie.CodeGeneration
         public IPredicate Predicate { get; }
         public CodeBlock Code { get; }
         public CodeBlock Else { get; }
+        public Label ElseLabel => Else == null ? Code.EndLabel : Else.EndLabel;
 
         private IPredicate LastPredicate;
 
@@ -284,55 +278,56 @@ namespace Reverie.CodeGeneration
         {
             Predicate = predicate;
             Code = code;
-            if (@else != null)
-            {
-                Else = @else;
-            }
-            else
-            {
-                Else = new CodeBlock();
-            }
+            Else = @else;
         }
 
         public Assembly Generate(Context ctx)
         {
             var asm = new Assembly();
-            var relation = Predicate as Relation;
-            relation?.Convert();
-            TraverseAndGenerate(Predicate, ctx, asm);
+            (Predicate as Relation)?.NormalizeToOr();
+            GenerateChecks(Predicate, ctx, asm);
+            GenerateBody(ctx, asm);
+            return asm;
+        }
 
+        private void GenerateBody(Context ctx, Assembly asm)
+        {
             var elseCtx = ctx.GetCopy();
 
             if (LastPredicate.JumpToElse)
             {
                 asm.Add(Code.Generate(ctx));
-                asm.Add($"jmp {Else.EndLabel}");
-                asm.Add(Else.Generate(elseCtx));
+                if (Else != null)
+                {
+                    asm.Add($"jmp {Else.EndLabel}");
+                    asm.Add(Else.Generate(elseCtx));
+                }
             }
             else
             {
-                asm.Add(Else.Generate(elseCtx));
-                asm.Add($"jmp {Code.EndLabel}");
+                if (Else != null)
+                {
+                    asm.Add(Else.Generate(elseCtx));
+                    asm.Add($"jmp {Code.EndLabel}");
+                }
                 asm.Add(Code.Generate(ctx));
             }
-
             ctx.Join(ctx, elseCtx);
-            return asm;
         }
 
-        private void TraverseAndGenerate(IPredicate predicate, Context ctx, Assembly output)
+        private void GenerateChecks(IPredicate predicate, Context ctx, Assembly output)
         {
             var relation = predicate as Relation;
             if (relation != null)
             {
-                TraverseAndGenerate(relation.Left, ctx, output);
-                TraverseAndGenerate(relation.Right, ctx, output);
+                GenerateChecks(relation.Left, ctx, output);
+                GenerateChecks(relation.Right, ctx, output);
             }
             else
             {
                 LastPredicate = predicate;
                 output.Add(predicate.Generate(ctx));
-                var labelToJump = predicate.JumpToElse ? Else.BeginLabel : Code.BeginLabel;
+                var labelToJump = predicate.JumpToElse ? ElseLabel : Code.BeginLabel;
                 output.Add($"{predicate.Jump} {labelToJump}");
             }
         }

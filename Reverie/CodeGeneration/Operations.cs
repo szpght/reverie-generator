@@ -156,7 +156,6 @@ namespace Reverie.CodeGeneration
     {
         And,
         Or,
-        Nor,
     }
 
     public class Relation : IPredicate
@@ -194,7 +193,7 @@ namespace Reverie.CodeGeneration
             {
                 relation.ConvertRelationType();
             }
-            foreach (var relation in relations.Where(x => x.Type == RelationType.Nor && !x.Negated|| x.Type == RelationType.Or && x.Negated))
+            foreach (var relation in relations.Where(x => x.Type == RelationType.Or && x.Negated))
             {
                 relation.NegateJumpInLeaves();
             }
@@ -211,33 +210,18 @@ namespace Reverie.CodeGeneration
         {
             if (Type == RelationType.And)
             {
-                Type = RelationType.Nor;
+                Type = RelationType.Or;
+                Negated = !Negated;
                 if (LeftAsRelation != null)
                 {
-                    LeftAsRelation?.FlipType();
-                    RightAsRelation?.FlipType();
+                    LeftAsRelation.Negated = !LeftAsRelation.Negated;
+                    RightAsRelation.Negated = !RightAsRelation.Negated;
                 }
                 else
                 {
                     Left.Negated = !Left.Negated;
                     Right.Negated = !Right.Negated;
                 }
-            }
-        }
-
-        private void FlipType()
-        {
-            if (Type == RelationType.Or)
-            {
-                Type = RelationType.Nor;
-            }
-            else if (Type == RelationType.Nor)
-            {
-                Type = RelationType.Or;
-            }
-            else
-            {
-                throw new Exception("this is supposed to be Or or Nor");
             }
         }
 

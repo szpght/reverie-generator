@@ -11,9 +11,9 @@ namespace Reverie
         {
             //var code = File.ReadAllText("ast.json");
             //dynamic ast = JsonConvert.DeserializeObject(code);
-            var a = new Variable("rsp", 8, VariableSize.Qword);
-            var b = new Variable("rsp", 16, VariableSize.Qword);
-            var output = new Variable("rsp", 24, VariableSize.Qword);
+            var a = new Variable("rsp", 0, VariableSize.Qword);
+            var b = new Variable("rsp", 8, VariableSize.Qword);
+            var output = new Variable("rsp", 16, VariableSize.Qword);
             var ctx = new Context();
             var add = BasicBinaryOp.Add(a, b, output);
             var sub = BasicBinaryOp.Subtract(a, b, output);

@@ -36,12 +36,17 @@ namespace Reverie.CodeGeneration
             {
                 movInstruction = "movsxd";
             }
-            return new Assembly($"{movInstruction} {registerName}, {Size.Asm()} [{Base} + {Offset}]");
+            return new Assembly($"{movInstruction} {registerName}, {this}");
         }
 
         public Assembly Store(Register register)
         {
-            return new Assembly($"mov {Size.Asm()} [{Base} + {Offset}], {register}");
+            return new Assembly($"mov {this}, {register}");
+        }
+
+        public override string ToString()
+        {
+            return $"{Size.Asm()} [{Base}{Offset: + #; - #;''}]";
         }
     }
 }

@@ -4,10 +4,10 @@ namespace Reverie.CodeGeneration
 {
     public class CodeBlock : ICode
     {
-        public IList<ICode> Code { get; set; }
-        public Variable Result { get; set; }
-        public Label BeginLabel { get; set; }
-        public Label EndLabel { get; set; }
+        public IList<ICode> Code { get; }
+        public Variable Result { get; }
+        public Label BeginLabel { get; }
+        public Label EndLabel { get; }
 
         public CodeBlock() : this(new List<ICode>(), null)
         {

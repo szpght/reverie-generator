@@ -1,97 +1,77 @@
-﻿namespace Reverie.CodeGeneration
+﻿using System.Collections.Generic;
+
+namespace Reverie.CodeGeneration
 {
-    public class Add : BinaryOp
+    public enum BasicBinaryOpType
     {
-        public Add(Variable a, Variable b, Variable output) : base(a, b, output) { }
+        Add,
+        Subtract,
+        ShiftLeft,
+        ShiftRight,
+        And,
+        Or,
+        Xor,
+    }
+
+    public class BasicBinaryOp : BinaryOp
+    {
+        private BasicBinaryOpType Type { get; }
+        public string Instruction => Instructions[Type];
+
+        private readonly Dictionary<BasicBinaryOpType, string> Instructions = new Dictionary<BasicBinaryOpType, string>
+        {
+            { BasicBinaryOpType.Add, "add" },
+            { BasicBinaryOpType.And, "and" },
+            { BasicBinaryOpType.Or, "or" },
+            { BasicBinaryOpType.ShiftLeft, "shl" },
+            { BasicBinaryOpType.ShiftRight, "shr" },
+            { BasicBinaryOpType.Subtract, "sub" },
+            { BasicBinaryOpType.Xor, "xor" },
+        };
+
+        public BasicBinaryOp(BasicBinaryOpType type, Variable a, Variable b, Variable output) : base(a, b, output)
+        {
+            Type = type;
+        }
 
         protected override Assembly GenerateOperation(Register a, Register b)
         {
-            return new Assembly($"add {a.FullName}, {b.FullName}");
+            return new Assembly($"{Instruction} {a.FullName}, {b.FullName}");
         }
-    }
 
-    public class Sub : BinaryOp
-    {
-        public Sub(Variable a, Variable b, Variable output) : base(a, b, output) { }
-
-        protected override Assembly GenerateOperation(Register a, Register b)
+        public static BasicBinaryOp Add(Variable a, Variable b, Variable output)
         {
-            return new Assembly($"sub {a.FullName}, {b.FullName}");
+            return new BasicBinaryOp(BasicBinaryOpType.Add, a, b, output);
         }
-    }
 
-    public class ShiftLeft : BinaryOp
-    {
-        public ShiftLeft(Variable a, Variable b, Variable output) : base(a, b, output) { }
-
-        protected override Assembly GenerateOperation(Register a, Register b)
+        public static BasicBinaryOp Subtract(Variable a, Variable b, Variable output)
         {
-            return new Assembly($"shl {a.FullName}, {b.FullName}");
+            return new BasicBinaryOp(BasicBinaryOpType.Subtract, a, b, output);
         }
-    }
 
-    public class ShiftRight : BinaryOp
-    {
-        public ShiftRight(Variable a, Variable b, Variable output) : base(a, b, output) { }
-
-        protected override Assembly GenerateOperation(Register a, Register b)
+        public static BasicBinaryOp ShiftLeft(Variable a, Variable b, Variable output)
         {
-            return new Assembly($"shr {a.FullName}, {b.FullName}");
+            return new BasicBinaryOp(BasicBinaryOpType.ShiftLeft, a, b, output);
         }
-    }
 
-    public class And : BinaryOp
-    {
-        public And(Variable a, Variable b, Variable output) : base(a, b, output) { }
-
-        protected override Assembly GenerateOperation(Register a, Register b)
+        public static BasicBinaryOp ShiftRight(Variable a, Variable b, Variable output)
         {
-            return new Assembly($"and {a.FullName}, {b.FullName}");
+            return new BasicBinaryOp(BasicBinaryOpType.ShiftRight, a, b, output);
         }
-    }
 
-    public class Or : BinaryOp
-    {
-        public Or(Variable a, Variable b, Variable output) : base(a, b, output) { }
-
-        protected override Assembly GenerateOperation(Register a, Register b)
+        public static BasicBinaryOp And(Variable a, Variable b, Variable output)
         {
-            return new Assembly($"or {a.FullName}, {b.FullName}");
+            return new BasicBinaryOp(BasicBinaryOpType.And, a, b, output);
         }
-    }
 
-    public class Xor : BinaryOp
-    {
-        public Xor(Variable a, Variable b, Variable output) : base(a, b, output) { }
-
-        protected override Assembly GenerateOperation(Register a, Register b)
+        public static BasicBinaryOp Or(Variable a, Variable b, Variable output)
         {
-            return new Assembly($"xor {a.FullName}, {b.FullName}");
+            return new BasicBinaryOp(BasicBinaryOpType.Or, a, b, output);
         }
-    }
 
-    public class Cmp : BinaryOp
-    {
-        public override bool HasOutput => false;
-
-        public Cmp(Variable a, Variable b, Variable output) : base(a, b, output) { }
-
-        protected override Assembly GenerateOperation(Register a, Register b)
+        public static BasicBinaryOp Xor(Variable a, Variable b, Variable output)
         {
-            return new Assembly($"cmp {a.FullName}, {b.FullName}");
+            return new BasicBinaryOp(BasicBinaryOpType.Or, a, b, output);
         }
     }
-
-    public class Test : BinaryOp
-    {
-        public override bool HasOutput => false;
-
-        public Test(Variable a, Variable b, Variable output) : base(a, b, output) { }
-
-        protected override Assembly GenerateOperation(Register a, Register b)
-        {
-            return new Assembly($"test {a.FullName}, {b.FullName}");
-        }
-    }
-
 }

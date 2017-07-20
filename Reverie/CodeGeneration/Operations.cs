@@ -146,6 +146,7 @@ namespace Reverie.CodeGeneration
     public interface IPredicate : ICode
     {
         bool Negated { get; set; }
+        bool JumpToElse { get; set; }
         string Jump { get; }
     }
 
@@ -153,6 +154,7 @@ namespace Reverie.CodeGeneration
     {
         And,
         Or,
+        Nor,
     }
 
     public class Relation : IPredicate
@@ -160,6 +162,7 @@ namespace Reverie.CodeGeneration
         public IPredicate Left { get; }
         public IPredicate Right { get; }
         public bool Negated { get; set; }
+        public bool JumpToElse { get; set; }
         public RelationType Type { get; private set; }
         public string Jump => null;
 
@@ -175,15 +178,23 @@ namespace Reverie.CodeGeneration
         {
             if (Type == RelationType.And)
             {
-                Type = RelationType.Or;
-                Negated = !Negated;
+                Type = RelationType.Nor;
                 Left.Negated = !Left.Negated;
                 Right.Negated = !Right.Negated;
+                ElsifyChildren();
             }
             var left = Left as Relation;
             left?.Convert();
-            var right = Left as Relation;
+            var right = Right as Relation;
             right?.Convert();
+        }
+
+        private void ElsifyChildren()
+        {
+            Left.JumpToElse = !Left.JumpToElse;
+            Right.JumpToElse = !Right.JumpToElse;
+            (Left as Relation)?.ElsifyChildren();
+            (Right as Relation)?.ElsifyChildren();
         }
 
         public Assembly Generate(Context ctx)
@@ -195,6 +206,7 @@ namespace Reverie.CodeGeneration
     public class Greater : BinaryOp, IPredicate
     {
         public bool Negated { get; set; }
+        public bool JumpToElse { get; set; }
 
         public Greater(Variable a, Variable b) : base(a, b, null) { }
 
@@ -257,10 +269,9 @@ namespace Reverie.CodeGeneration
             }
             else
             {
-                var lol = predicate as BinaryOp;
-                output.Add($"zmienne {lol.A.Offset} {lol.B.Offset}");
                 output.Add(predicate.Generate(ctx));
-                output.Add($"{predicate.Jump} {Code.BeginLabel}");
+                var labelToJump = predicate.JumpToElse ? Else.BeginLabel : Code.BeginLabel;
+                output.Add($"{predicate.Jump} {labelToJump}");
             }
         }
     }

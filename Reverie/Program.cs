@@ -2,6 +2,7 @@
 using System;
 using System.Collections.Generic;
 using System.IO;
+using System.Security.Permissions;
 using Reverie.CodeGeneration;
 
 namespace Reverie
@@ -27,10 +28,9 @@ namespace Reverie
             var p4 = new Relation(p2, p3, RelationType.And);
             var p5 = new Relation(p1, p4, RelationType.And);
             var P = p5;
-            var @if = new If();
-            @if.Predicate = P;
-            @if.Code = new CodeBlock(new List<ICode>() { add }, null);
-            @if.Else = new CodeBlock(new List<ICode>() { sub }, null);
+            var trueBlock = new CodeBlock(new List<ICode>() { add }, null);
+            var falseBlock = new CodeBlock(new List<ICode>() { sub }, null);
+            var @if = new If(P, trueBlock, falseBlock);
             Console.Out.WriteLine(@if.Generate(ctx));
 
 

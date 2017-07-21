@@ -5,14 +5,18 @@ namespace Reverie.CodeGeneration
 {
     public class Context
     {
+        public ICallingConvention CallingConvention { get; }
+
         private List<RegisterVariablePair> Allocations = new List<RegisterVariablePair>();
+        private List<RegisterVariablePair> LockedAllocations = new List<RegisterVariablePair>();
         private List<string> FreeRegisters;
         private List<string> FreeSavedRegisters;
 
-        public Context()
+        public Context(ICallingConvention callingConvention)
         {
             FreeRegisters = FreshFreeRegisters();
             FreeSavedRegisters = FreshSavedRegisters();
+            CallingConvention = callingConvention;
         }
 
         public Register Load(Variable variable, Assembly assembly)
@@ -93,6 +97,73 @@ namespace Reverie.CodeGeneration
             Allocations.Clear();
         }
 
+        public void LockFunctionArgument(Variable variable, string registerName, Assembly assembly)
+        {
+            var variableAllocation = Allocations.SingleOrDefault(x => x.Variable == variable);
+            if (variableAllocation != null)
+            {
+                Allocations.Remove(variableAllocation);
+            }
+
+            var alloc = Allocations.SingleOrDefault(x => x.Register.FullName == registerName);
+            if (alloc != null)
+            {
+                Allocations.Remove(alloc);
+            }
+            FreeRegisters.Remove(registerName);
+            FreeSavedRegisters.Remove(registerName);
+
+            var register = new Register(registerName, variable.Size);
+            var pair = new RegisterVariablePair(register, variable);
+            LockedAllocations.Add(pair);
+            var loadAsm = variable.Load(register);
+            assembly.Add(loadAsm);
+        }
+
+        public void AfterFunctionCall()
+        {
+            InvalidateUnsavedRegisters();
+            UnlockArguments();
+        }
+
+        public void InvalidateVariable(Variable variable)
+        {
+            var pair = Allocations.SingleOrDefault(x => x.Variable == variable);
+            if (pair != null)
+            {
+                Allocations.Remove(pair);
+                FreeRegisters.Add(pair.Register.FullName);
+            }
+        }
+
+        private void InvalidateUnsavedRegisters()
+        {
+            var unsaved = FreshFreeRegisters();
+            foreach (var reg in unsaved)
+            {
+                ReleaseRegister(reg);
+            }
+        }
+
+        private void UnlockArguments()
+        {
+            foreach (var locked in LockedAllocations)
+            {
+                FreeRegisters.Add(locked.Register.FullName);
+            }
+            LockedAllocations.Clear();
+        }
+
+        private void ReleaseRegister(string name)
+        {
+            var pair = Allocations.SingleOrDefault(x => x.Register.FullName == name);
+            if (pair != null)
+            {
+                Allocations.Remove(pair);
+                FreeRegisters.Add(name);
+            }
+        }
+
         private void JoinFreeRegisters(Context a, Context b)
         {
             FreeRegisters = FreshFreeRegisters()
@@ -146,8 +217,7 @@ namespace Reverie.CodeGeneration
         {
             return new List<string>()
             {
-                "rax",
-                "rcd",
+                "rcx",
                 "rdx",
                 "rsi",
                 "rdi",

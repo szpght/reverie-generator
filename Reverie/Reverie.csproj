@@ -47,6 +47,7 @@
     <Compile Include="CodeGeneration\BinaryOp.cs" />
     <Compile Include="CodeGeneration\CodeBlock.cs" />
     <Compile Include="CodeGeneration\Context.cs" />
+    <Compile Include="CodeGeneration\FunctionCall.cs" />
     <Compile Include="CodeGeneration\ICallingConvention.cs" />
     <Compile Include="CodeGeneration\ICode.cs" />
     <Compile Include="CodeGeneration\If.cs" />
@@ -56,6 +57,7 @@
     <Compile Include="CodeGeneration\Push.cs" />
     <Compile Include="CodeGeneration\Register.cs" />
     <Compile Include="CodeGeneration\Relation.cs" />
+    <Compile Include="CodeGeneration\SysVABICallingConvention.cs" />
     <Compile Include="CodeGeneration\Variable.cs" />
     <Compile Include="CodeGeneration\VariableSize.cs" />
     <Compile Include="CodeGeneration\While.cs" />

@@ -14,9 +14,26 @@ namespace Reverie
             var a = new Variable("rsp", 0, VariableSize.Qword);
             var b = new Variable("rsp", 8, VariableSize.Qword);
             var output = new Variable("rsp", 16, VariableSize.Qword);
-            var ctx = new Context();
+            var cc = new SysVABICallingConvention();
+            var ctx = new Context(cc);
             var add = BasicBinaryOp.Add(a, b, output);
             var sub = BasicBinaryOp.Subtract(a, b, output);
+
+            var arguments = new List<Variable>
+            {
+                a,
+                a,
+                a,
+                a,
+                a,
+                a,
+                a,
+                b,
+                output
+            };
+            var call = new FunctionCall(new Label("dupa", false), arguments);
+            call.Result = output;
+            Console.WriteLine(call.Generate(ctx));
 
 
             var p1 = new Greater(a, b);

@@ -9,14 +9,14 @@ namespace Reverie.CodeGeneration
 
         private List<RegisterVariablePair> Allocations = new List<RegisterVariablePair>();
         private List<RegisterVariablePair> LockedAllocations = new List<RegisterVariablePair>();
-        private List<string> FreeRegisters;
-        private List<string> FreeSavedRegisters;
+        private IList<string> FreeRegisters;
+        private IList<string> FreeSavedRegisters;
 
         public Context(ICallingConvention callingConvention)
         {
-            FreeRegisters = FreshFreeRegisters();
-            FreeSavedRegisters = FreshSavedRegisters();
             CallingConvention = callingConvention;
+            FreeRegisters = CallingConvention.GetVolatileRegisters();
+            FreeSavedRegisters = CallingConvention.GetNonvolatileRegisters();
         }
 
         public Register Load(Variable variable, Assembly assembly)
@@ -138,7 +138,7 @@ namespace Reverie.CodeGeneration
 
         private void InvalidateUnsavedRegisters()
         {
-            var unsaved = FreshFreeRegisters();
+            var unsaved = CallingConvention.GetVolatileRegisters();
             foreach (var reg in unsaved)
             {
                 ReleaseRegister(reg);
@@ -166,8 +166,8 @@ namespace Reverie.CodeGeneration
 
         private void JoinFreeRegisters(Context a, Context b)
         {
-            FreeRegisters = FreshFreeRegisters()
-                .Union(FreshSavedRegisters())
+            FreeRegisters = CallingConvention.GetVolatileRegisters()
+                .Union(CallingConvention.GetNonvolatileRegisters())
                 .Except(FreeSavedRegisters)
                 .Except(Allocations.Select(x => x.Register.FullName))
                 .ToList();
@@ -193,8 +193,8 @@ namespace Reverie.CodeGeneration
             Allocations = newAllocations;
         }
 
-        private Context(List<RegisterVariablePair> allocations, List<string> freeRegisters,
-            List<string> freeSavedRegisters)
+        private Context(IList<RegisterVariablePair> allocations, IList<string> freeRegisters,
+            IList<string> freeSavedRegisters)
         {
             Allocations = new List<RegisterVariablePair>(allocations);
             FreeRegisters = new List<string>(freeRegisters);
@@ -211,33 +211,6 @@ namespace Reverie.CodeGeneration
                 Register = register;
                 Variable = variable;
             }
-        }
-
-        private List<string> FreshFreeRegisters()
-        {
-            return new List<string>()
-            {
-                "rcx",
-                "rdx",
-                "rsi",
-                "rdi",
-                "r8",
-                "r9",
-                "r10",
-                "r11",
-            };
-        }
-
-        private List<string> FreshSavedRegisters()
-        {
-            return new List<string>()
-            {
-                "rbx",
-                "r12",
-                "r13",
-                "r14",
-                "r15",
-            };
         }
     }
 }

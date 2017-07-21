@@ -84,6 +84,15 @@ namespace Reverie.CodeGeneration
             JoinFreeRegisters(a, b);
         }
 
+        public void InvalidateRegisters()
+        {
+            foreach (var pair in Allocations)
+            {
+                FreeRegisters.Add(pair.Register.FullName);
+            }
+            Allocations.Clear();
+        }
+
         private void JoinFreeRegisters(Context a, Context b)
         {
             FreeRegisters = FreshFreeRegisters()

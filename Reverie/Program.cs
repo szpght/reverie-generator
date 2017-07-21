@@ -30,7 +30,9 @@ namespace Reverie
             var @if = new If(P, trueBlock, falseBlock);
             Console.WriteLine(@if.Generate(ctx));
             Console.WriteLine("-------------------------");
-            Console.WriteLine(add.Generate(ctx));
+
+            var @while = new While(P, trueBlock);
+            Console.WriteLine(@while.Generate(ctx));
 
 
             //Console.Read();

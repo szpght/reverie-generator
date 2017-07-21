@@ -52,6 +52,7 @@
     <Compile Include="CodeGeneration\IPredicate.cs" />
     <Compile Include="CodeGeneration\Label.cs" />
     <Compile Include="CodeGeneration\Predicates.cs" />
+    <Compile Include="CodeGeneration\Push.cs" />
     <Compile Include="CodeGeneration\Register.cs" />
     <Compile Include="CodeGeneration\Relation.cs" />
     <Compile Include="CodeGeneration\Variable.cs" />

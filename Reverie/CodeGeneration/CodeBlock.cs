@@ -27,7 +27,7 @@ namespace Reverie.CodeGeneration
             asm.Add(BeginLabel.Declaration);
             foreach (var code in Code)
             {
-                asm.Add(code.Generate(ctx));
+                asm.Add(code, ctx);
             }
             asm.Add(EndLabel.Declaration);
             return asm;

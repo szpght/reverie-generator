@@ -1,6 +1,6 @@
 ﻿namespace Reverie.CodeGeneration
 {
-    class While : ICode
+    public class While : ICode
     {
         public IPredicate Predicate { get; }
         public CodeBlock Code { get; }
@@ -17,10 +17,10 @@
             var beginning = Label.New(true);
             // TODO do not modify Code
             Code.Code.Add(new Jmp(beginning));
-            asm.Add(beginning.Generate(ctx));
+            asm.Add(beginning, ctx);
             var check = new If(Predicate, Code, null);
             ctx.InvalidateRegisters();
-            asm.Add(check.Generate(ctx));
+            asm.Add(check, ctx);
             return asm;
         }
     }

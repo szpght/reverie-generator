@@ -31,21 +31,21 @@ namespace Reverie.CodeGeneration
 
             if (LastPredicate.JumpToElse)
             {
-                asm.Add(Code.Generate(ctx));
+                asm.Add(Code, ctx);
                 if (Else != null)
                 {
                     asm.Add($"jmp {Else.EndLabel}");
-                    asm.Add(Else.Generate(elseCtx));
+                    asm.Add(Else, elseCtx);
                 }
             }
             else
             {
                 if (Else != null)
                 {
-                    asm.Add(Else.Generate(elseCtx));
+                    asm.Add(Else, elseCtx);
                     asm.Add($"jmp {Code.EndLabel}");
                 }
-                asm.Add(Code.Generate(ctx));
+                asm.Add(Code, ctx);
             }
             ctx.Join(ctx, elseCtx);
         }
@@ -61,7 +61,7 @@ namespace Reverie.CodeGeneration
             else
             {
                 LastPredicate = predicate;
-                output.Add(predicate.Generate(ctx));
+                output.Add(predicate, ctx);
                 var labelToJump = predicate.JumpToElse ? ElseLabel : Code.BeginLabel;
                 output.Add($"{predicate.Jump} {labelToJump}");
             }

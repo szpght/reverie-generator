@@ -25,7 +25,11 @@ namespace Reverie.CodeGeneration
 
         public Assembly Generate(Context ctx)
         {
-            var asm = new Assembly();
+            throw new NotImplementedException();
+        }
+
+        public void Generate(Assembly asm, Context ctx)
+        {
             var regA = ctx.Load(A, asm);
             var regB = ctx.Load(B, asm);
             asm.Add(GenerateOperation(regA, regB));
@@ -33,7 +37,6 @@ namespace Reverie.CodeGeneration
             {
                 ctx.Store(regA, Out, asm);
             }
-            return asm;
         }
     }
 }

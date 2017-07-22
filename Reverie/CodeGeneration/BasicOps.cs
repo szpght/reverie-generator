@@ -11,7 +11,12 @@
 
         public Assembly Generate(Context ctx)
         {
-            return new Assembly($"jmp {Label}");
+            throw new System.NotImplementedException();
+        }
+
+        public void Generate(Assembly asm, Context ctx)
+        {
+            asm.Add($"jmp {Label}");
         }
     }
 }

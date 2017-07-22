@@ -23,14 +23,17 @@ namespace Reverie.CodeGeneration
 
         public Assembly Generate(Context ctx)
         {
-            var asm = new Assembly();
+            throw new System.NotImplementedException();
+        }
+
+        public void Generate(Assembly asm, Context ctx)
+        {
             asm.Add(BeginLabel.Declaration);
             foreach (var code in Code)
             {
                 asm.Generate(code, ctx);
             }
             asm.Add(EndLabel.Declaration);
-            return asm;
         }
 
         public void Add(ICode item)

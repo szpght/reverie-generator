@@ -89,7 +89,11 @@ namespace Reverie.CodeGeneration
 
         public Assembly Generate(Context ctx)
         {
-            return new Assembly();
+            throw new System.NotImplementedException();
+        }
+
+        public void Generate(Assembly asm, Context ctx)
+        {
         }
     }
 }

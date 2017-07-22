@@ -25,7 +25,12 @@
 
         public Assembly Generate(Context ctx)
         {
-            return new Assembly(Declaration);
+            throw new System.NotImplementedException();
+        }
+
+        public void Generate(Assembly asm, Context ctx)
+        {
+            asm.Add(Declaration);
         }
 
         public static Label New(LabelType type)

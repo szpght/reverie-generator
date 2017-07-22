@@ -20,7 +20,11 @@ namespace Reverie.CodeGeneration
 
         public Assembly Generate(Context ctx)
         {
-            var asm = new Assembly();
+            throw new System.NotImplementedException();
+        }
+
+        public void Generate(Assembly asm, Context ctx)
+        {
             var cc = ctx.CallingConvention;
             asm.Add(cc.LoadArguments(Arguments, ctx));
             asm.Add($"call {Function}");
@@ -32,7 +36,6 @@ namespace Reverie.CodeGeneration
                 asm.Add(Result.Store(resultRegister));
             }
             ctx.AfterFunctionCall();
-            return asm;
         }
     }
 }

@@ -13,7 +13,11 @@
 
         public Assembly Generate(Context ctx)
         {
-            var asm = new Assembly();
+            throw new System.NotImplementedException();
+        }
+
+        public void Generate(Assembly asm, Context ctx)
+        {
             var code = new CodeBlock();
             var beginning = Label.New(LabelType.Local);
             var body = new If(Predicate, code);
@@ -25,7 +29,6 @@
 
             asm.Generate(beginning, ctx);
             asm.Generate(body, ctx);
-            return asm;
         }
     }
 }

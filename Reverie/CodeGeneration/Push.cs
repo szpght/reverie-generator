@@ -11,10 +11,13 @@
 
         public Assembly Generate(Context ctx)
         {
-            var asm = new Assembly();
+            throw new System.NotImplementedException();
+        }
+
+        public void Generate(Assembly asm, Context ctx)
+        {
             var register = ctx.Load(Variable, asm);
             asm.Add($"push {register}");
-            return asm;
         }
     }
 }

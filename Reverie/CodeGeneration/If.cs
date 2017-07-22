@@ -17,11 +17,14 @@ namespace Reverie.CodeGeneration
 
         public Assembly Generate(Context ctx)
         {
-            var asm = new Assembly();
+            throw new System.NotImplementedException();
+        }
+
+        public void Generate(Assembly asm, Context ctx)
+        {
             (Predicate as Relation)?.NormalizeToOr();
             GenerateChecks(Predicate, ctx, asm);
             GenerateBody(ctx, asm);
-            return asm;
         }
 
         private void GenerateBody(Context ctx, Assembly asm)

@@ -28,33 +28,33 @@ namespace Reverie.CodeGeneration
 
             if (LastPredicate.JumpToElse)
             {
-                asm.Generate(Code, ctx);
+                Code.Generate(asm, ctx);
                 asm.Add($"jmp {Else.EndLabel}");
-                asm.Generate(Else, elseCtx);
+                Else.Generate(asm, elseCtx);
             }
             else
             {
-                asm.Generate(Else, elseCtx);
+                Else.Generate(asm, elseCtx);
                 asm.Add($"jmp {Code.EndLabel}");
-                asm.Generate(Code, ctx);
+                Code.Generate(asm, ctx);
             }
             ctx.Join(ctx, elseCtx);
         }
 
-        private void GenerateChecks(IPredicate predicate, Context ctx, Assembly output)
+        private void GenerateChecks(IPredicate predicate, Context ctx, Assembly asm)
         {
             var relation = predicate as Relation;
             if (relation != null)
             {
-                GenerateChecks(relation.Left, ctx, output);
-                GenerateChecks(relation.Right, ctx, output);
+                GenerateChecks(relation.Left, ctx, asm);
+                GenerateChecks(relation.Right, ctx, asm);
             }
             else
             {
                 LastPredicate = predicate;
-                output.Generate(predicate, ctx);
+                predicate.Generate(asm, ctx);
                 var labelToJump = predicate.JumpToElse ? Else.BeginLabel : Code.BeginLabel;
-                output.Add($"{predicate.Jump} {labelToJump}");
+                asm.Add($"{predicate.Jump} {labelToJump}");
             }
         }
     }

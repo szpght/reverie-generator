@@ -22,8 +22,8 @@
 
             ctx.InvalidateRegisters();
 
-            asm.Generate(beginning, ctx);
-            asm.Generate(body, ctx);
+            beginning.Generate(asm, ctx);
+            body.Generate(asm, ctx);
         }
     }
 }

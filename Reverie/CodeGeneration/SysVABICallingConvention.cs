@@ -23,7 +23,8 @@ namespace Reverie.CodeGeneration
 
             for (int j = arguments.Count - 1; j >= i; --j)
             {
-                asm.Generate(new Push(arguments[j]), ctx);
+                var push = new Push(arguments[j]);
+                push.Generate(asm, ctx);
             }
 
             // number of float arguments in variadic function

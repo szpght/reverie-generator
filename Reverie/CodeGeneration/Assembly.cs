@@ -18,7 +18,7 @@ namespace Reverie.CodeGeneration
             AddRange(assembly);
         }
 
-        public void Add(ICode code, Context ctx)
+        public void Generate(ICode code, Context ctx)
         {
             AddRange(code.Generate(ctx));
         }

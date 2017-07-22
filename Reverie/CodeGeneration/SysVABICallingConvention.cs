@@ -23,7 +23,7 @@ namespace Reverie.CodeGeneration
 
             for (int j = arguments.Count - 1; j >= i; --j)
             {
-                asm.Add(new Push(arguments[j]), ctx);
+                asm.Generate(new Push(arguments[j]), ctx);
             }
 
             return asm;

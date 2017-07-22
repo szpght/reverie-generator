@@ -33,7 +33,7 @@ namespace Reverie
             };
             var call = new FunctionCall(new Label("dupa", LabelType.Global), arguments);
             call.Result = output;
-            Console.WriteLine(call.Generate(ctx));
+            GenerateAndPrint(call, ctx);
 
 
             var p1 = new Greater(a, b);
@@ -45,14 +45,21 @@ namespace Reverie
             var trueBlock = new CodeBlock(new List<ICode>() { add, sub }, null);
             var falseBlock = new CodeBlock(new List<ICode>() { sub, add }, null);
             var @if = new If(P, trueBlock, falseBlock);
-            Console.WriteLine(@if.Generate(ctx));
+            GenerateAndPrint(@if, ctx);
             Console.WriteLine("-------------------------");
 
             var @while = new While(P, trueBlock);
-            Console.WriteLine(@while.Generate(ctx));
+            GenerateAndPrint(@while, ctx);
 
 
             //Console.Read();
+        }
+
+        static void GenerateAndPrint(ICode code, Context ctx)
+        {
+            var asm = new Assembly();
+            code.Generate(asm, ctx);
+            Console.WriteLine(asm);
         }
     }
 }

@@ -28,7 +28,7 @@ namespace Reverie.CodeGeneration
             if (Result != null)
             {
                 ctx.InvalidateVariable(Result);
-                var resultRegister = new Register("rax", Result.Size);
+                var resultRegister = new Register("rax");
                 asm.Add(Result.Store(resultRegister));
             }
             ctx.AfterFunctionCall();

@@ -3,28 +3,54 @@ namespace Reverie.CodeGeneration
     public class Register
     {
         public string FullName { get; }
-        public string Name => ToString();
-        public VariableSize Size { get; }
 
-        public Register(string register, VariableSize size)
+        public Register(string register)
         {
             FullName = register;
-            Size = size;
         }
 
-        public Register WithSize(VariableSize size)
+        public string WithSize(VariableSize size)
         {
-            return new Register(FullName, size);
+            return FullName + size.RegisterSuffix();
         }
 
         public override string ToString()
         {
-            return FullName + Size.RegisterSuffix();
+            return FullName;
         }
 
-        public bool TheSameAs(Register register)
+        public override bool Equals(object obj)
         {
-            return FullName == register.FullName;
+            if (obj is Register register)
+            {
+                return register.FullName == FullName;
+            }
+            return false;
+        }
+
+        public override int GetHashCode()
+        {
+            return FullName.GetHashCode();
+        }
+
+        public static bool operator ==(Register a, Register b)
+        {
+            if (ReferenceEquals(a, b))
+            {
+                return true;
+            }
+
+            if ((object)a == null || (object)b == null)
+            {
+                return false;
+            }
+
+            return a.FullName == b.FullName;
+        }
+
+        public static bool operator !=(Register a, Register b)
+        {
+            return !(a == b);
         }
     }
 }

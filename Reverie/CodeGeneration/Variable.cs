@@ -22,7 +22,7 @@ namespace Reverie.CodeGeneration
             if (Size == VariableSize.Qword || Size == VariableSize.Dword && !Sign)
             {
                 movInstruction = "mov";
-                registerName = register.Name;
+                registerName = register.WithSize(Size);
             }
             else if (!Sign)
             {
@@ -36,12 +36,12 @@ namespace Reverie.CodeGeneration
             {
                 movInstruction = "movsxd";
             }
-            return new Assembly($"{movInstruction} {registerName}, {this}");
+            return new Assembly($"{movInstruction} {registerName}, {ToString()}");
         }
 
         public Assembly Store(Register register)
         {
-            return new Assembly($"mov {this}, {register}");
+            return new Assembly($"mov {ToString()}, {register.WithSize(Size)}");
         }
 
         public override string ToString()

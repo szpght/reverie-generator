@@ -38,7 +38,6 @@ namespace Reverie.CodeGeneration
 
         public void Store(Register register, Variable variable, Assembly assembly)
         {
-            register = register.WithSize(variable.Size);
             var storeAssembly = variable.Store(register);
             assembly.Add(storeAssembly);
 
@@ -49,7 +48,7 @@ namespace Reverie.CodeGeneration
                 Allocations.Remove(varPair);
             }
 
-            Allocations.RemoveAll(x => x.Register.TheSameAs(register));
+            Allocations.RemoveAll(x => x.Register == register);
             var pair = new RegisterVariablePair(register, variable);
             Allocations.Add(pair);
         }
@@ -73,7 +72,7 @@ namespace Reverie.CodeGeneration
                 Allocations.Remove(pair);
                 name = pair.Register.FullName;
             }
-            return new Register(name, size);
+            return new Register(name);
         }
 
         public Context GetCopy()
@@ -113,7 +112,7 @@ namespace Reverie.CodeGeneration
             FreeRegisters.Remove(registerName);
             FreeSavedRegisters.Remove(registerName);
 
-            var register = new Register(registerName, variable.Size);
+            var register = new Register(registerName);
             var pair = new RegisterVariablePair(register, variable);
             LockedAllocations.Add(pair);
             var loadAsm = variable.Load(register);
@@ -185,7 +184,7 @@ namespace Reverie.CodeGeneration
             var newAllocations = new List<RegisterVariablePair>();
             foreach (var pair in a.Allocations)
             {
-                if (b.Allocations.Any(x => x.Register.TheSameAs(pair.Register) && x.Variable == pair.Variable))
+                if (b.Allocations.Any(x => x.Register == pair.Register && x.Variable == pair.Variable))
                 {
                     newAllocations.Add(pair);
                 }

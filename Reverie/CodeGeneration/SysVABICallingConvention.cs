@@ -11,6 +11,29 @@ namespace Reverie.CodeGeneration
             ArgumentRegisters = GetIntegerArgumentRegisters();
         }
 
+        public IList<RegisterInfo> GetRegisters()
+        {
+            return new List<RegisterInfo>
+            {
+                new RegisterInfo("rax", false),
+                new RegisterInfo("rbx", true),
+                new RegisterInfo("rcx", false),
+                new RegisterInfo("rdx", false),
+                new RegisterInfo("rsp", false),
+                new RegisterInfo("rbp", false),
+                new RegisterInfo("rdi", false),
+                new RegisterInfo("rsi", false),
+                new RegisterInfo("r8", false),
+                new RegisterInfo("r9", false),
+                new RegisterInfo("r10", false),
+                new RegisterInfo("r11", false),
+                new RegisterInfo("r12", true),
+                new RegisterInfo("r13", true),
+                new RegisterInfo("r14", true),
+                new RegisterInfo("r15", true),
+            };
+        }
+
         public Assembly LoadArguments(IList<Variable> arguments, Context ctx)
         {
             var asm = new Assembly();

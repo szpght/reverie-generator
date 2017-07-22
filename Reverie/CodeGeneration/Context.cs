@@ -3,6 +3,78 @@ using System.Linq;
 
 namespace Reverie.CodeGeneration
 {
+    public interface IArchitecture
+    {
+        IList<RegisterInfo> GetRegisters();
+    }
+
+    public class NewContext
+    {
+        public IArchitecture Architecture { get; }
+        public ICallingConvention CallingConvention { get; }
+        private IList<RegisterInfo> Registers;
+
+        public NewContext(IArchitecture architecture, ICallingConvention callingConvention)
+        {
+            Architecture = architecture;
+            CallingConvention = callingConvention;
+            Registers = architecture.GetRegisters();
+        }
+
+        public Register Load(Variable variable, Assembly assembly)
+        {
+            var alloc = Registers.SingleOrDefault(x => x.Variable == variable);
+            if (alloc == null)
+            {
+                alloc = GetRegister();
+                alloc.Variable = variable;
+                var loadAssembly = variable.Load(alloc.Register);
+                assembly.Add(loadAssembly);
+            }
+            ToEnd(alloc);
+            return alloc.Register;
+        }
+
+        private RegisterInfo GetRegister()
+        {
+            return Registers
+                .First(x => !x.Locked);
+        }
+
+        private void ToEnd(RegisterInfo info)
+        {
+            Registers.Remove(info);
+            Registers.Add(info);
+        }
+    }
+
+    public class RegisterInfo
+    {
+        public Register Register { get; }
+        public bool Nonvolatile { get; }
+        public bool Dirty { get; set; }
+        public bool Locked { get; set; }
+
+        public Variable Variable
+        {
+            get => variable_;
+            set
+            {
+                variable_ = value;
+                Dirty = true;
+            }
+        }
+
+
+        private Variable variable_;
+
+        public RegisterInfo(string register, bool nonvolatile)
+        {
+            Register = new Register(register);
+            Nonvolatile = nonvolatile;
+        }
+    }
+
     public class Context
     {
         public ICallingConvention CallingConvention { get; }

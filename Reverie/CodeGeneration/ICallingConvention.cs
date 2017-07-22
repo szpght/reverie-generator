@@ -9,5 +9,6 @@ namespace Reverie.CodeGeneration
         IList<string> GetVolatileRegisters();
         IList<string> GetNonvolatileRegisters();
         IList<string> GetIntegerArgumentRegisters();
+        IList<RegisterInfo> GetRegisters();
     }
 }

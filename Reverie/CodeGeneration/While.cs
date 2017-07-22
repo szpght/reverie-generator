@@ -14,13 +14,17 @@
         public Assembly Generate(Context ctx)
         {
             var asm = new Assembly();
+            var code = new CodeBlock();
             var beginning = Label.New(true);
-            // TODO do not modify Code
-            Code.Code.Add(new Jmp(beginning));
-            asm.Add(beginning, ctx);
-            var check = new If(Predicate, Code, null);
+            var body = new If(Predicate, code, null);
+
+            code.Add(Code);
+            code.Add(new Jmp(beginning));
+
             ctx.InvalidateRegisters();
-            asm.Add(check, ctx);
+
+            asm.Add(beginning, ctx);
+            asm.Add(body, ctx);
             return asm;
         }
     }

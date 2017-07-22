@@ -26,6 +26,8 @@ namespace Reverie.CodeGeneration
                 asm.Generate(new Push(arguments[j]), ctx);
             }
 
+            // number of float arguments in variadic function
+            asm.Add("xor rax, rax");
             return asm;
         }
 

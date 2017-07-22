@@ -3,18 +3,16 @@
     public class Label : ICode
     {
         public string Name { get; }
-        public bool Local { get; }
+        public LabelType Type { get; }
         public string Declaration => Name + ":";
 
-        private static ulong Count = 1;
+        private static long Count = -1;
 
-        public Label(string name) : this(name, false) {}
-
-        public Label(string name, bool local)
+        public Label(string name, LabelType type = LabelType.Global)
         {
-            Local = local;
+            Type = type;
             Name = name;
-            if (local)
+            if (type == LabelType.Local)
             {
                 Name = "." + Name;
             }
@@ -30,11 +28,16 @@
             return new Assembly(Declaration);
         }
 
-        public static Label New(bool local)
+        public static Label New(LabelType type)
         {
-            var label = new Label("L" + Count, local);
             Count += 1;
-            return label;
+            return new Label("L" + Count, type);
         }
+    }
+
+    public enum LabelType
+    {
+        Local,
+        Global,
     }
 }

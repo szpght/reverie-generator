@@ -17,8 +17,8 @@ namespace Reverie.CodeGeneration
         {
             Code = code;
             Result = result;
-            BeginLabel = Label.New(true);
-            EndLabel = Label.New(true);
+            BeginLabel = Label.New(LabelType.Local);
+            EndLabel = Label.New(LabelType.Local);
         }
 
         public Assembly Generate(Context ctx)

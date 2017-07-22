@@ -15,7 +15,7 @@
         {
             var asm = new Assembly();
             var code = new CodeBlock();
-            var beginning = Label.New(true);
+            var beginning = Label.New(LabelType.Local);
             var body = new If(Predicate, code);
 
             code.Add(Code);

@@ -18,11 +18,6 @@ namespace Reverie.CodeGeneration
             AddRange(assembly);
         }
 
-        public void Generate(ICode code, Context ctx)
-        {
-            AddRange(code.Generate(ctx));
-        }
-
         public override string ToString()
         {
             return string.Join("\n", this);

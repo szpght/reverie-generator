@@ -32,5 +32,10 @@ namespace Reverie.CodeGeneration
             asm.Add(EndLabel.Declaration);
             return asm;
         }
+
+        public void Add(ICode item)
+        {
+            Code.Add(item);
+        }
     }
 }

@@ -23,11 +23,6 @@ namespace Reverie.CodeGeneration
 
         protected abstract Assembly GenerateOperation(Register a, Register b);
 
-        public Assembly Generate(Context ctx)
-        {
-            throw new NotImplementedException();
-        }
-
         public void Generate(Assembly asm, Context ctx)
         {
             var regA = ctx.Load(A, asm);

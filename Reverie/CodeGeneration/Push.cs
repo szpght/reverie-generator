@@ -9,11 +9,6 @@
             Variable = variable;
         }
 
-        public Assembly Generate(Context ctx)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public void Generate(Assembly asm, Context ctx)
         {
             var register = ctx.Load(Variable, asm);

@@ -21,11 +21,6 @@ namespace Reverie.CodeGeneration
             EndLabel = Label.New(LabelType.Local);
         }
 
-        public Assembly Generate(Context ctx)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public void Generate(Assembly asm, Context ctx)
         {
             asm.Add(BeginLabel.Declaration);

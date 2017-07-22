@@ -15,11 +15,6 @@ namespace Reverie.CodeGeneration
             Else = @else ?? new CodeBlock();
         }
 
-        public Assembly Generate(Context ctx)
-        {
-            throw new System.NotImplementedException();
-        }
-
         public void Generate(Assembly asm, Context ctx)
         {
             (Predicate as Relation)?.NormalizeToOr();

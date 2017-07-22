@@ -18,7 +18,7 @@ namespace Reverie.CodeGeneration
         public Assembly Load(Register register)
         {
             string movInstruction = "mov";
-            string registerName = register.FullName;
+            string registerName = register.Name;
             if (Size == VariableSize.Qword || Size == VariableSize.Dword && !Sign)
             {
                 movInstruction = "mov";

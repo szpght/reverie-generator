@@ -2,35 +2,35 @@ namespace Reverie.CodeGeneration
 {
     public class Register
     {
-        public string FullName { get; }
+        public string Name { get; }
 
         public Register(string register)
         {
-            FullName = register;
+            Name = register;
         }
 
         public string WithSize(VariableSize size)
         {
-            return FullName + size.RegisterSuffix();
+            return Name + size.RegisterSuffix();
         }
 
         public override string ToString()
         {
-            return FullName;
+            return Name;
         }
 
         public override bool Equals(object obj)
         {
             if (obj is Register register)
             {
-                return register.FullName == FullName;
+                return register.Name == Name;
             }
             return false;
         }
 
         public override int GetHashCode()
         {
-            return FullName.GetHashCode();
+            return Name.GetHashCode();
         }
 
         public static bool operator ==(Register a, Register b)
@@ -45,7 +45,7 @@ namespace Reverie.CodeGeneration
                 return false;
             }
 
-            return a.FullName == b.FullName;
+            return a.Name == b.Name;
         }
 
         public static bool operator !=(Register a, Register b)

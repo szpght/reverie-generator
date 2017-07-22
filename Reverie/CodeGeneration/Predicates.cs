@@ -26,9 +26,9 @@ namespace Reverie.CodeGeneration
             }
         }
 
-        protected override Assembly GenerateOperation(Register a, Register b)
+        protected override Assembly GenerateOperation(Register registerA, Register registerB)
         {
-            return new Assembly($"cmp {a.FullName}, {b.FullName}");
+            return new Assembly($"cmp {registerA}, {registerB}");
         }
     }
 }

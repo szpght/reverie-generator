@@ -13,7 +13,7 @@
         {
             var asm = new Assembly();
             var register = ctx.Load(Variable, asm);
-            asm.Add($"push {register.FullName}");
+            asm.Add($"push {register}");
             return asm;
         }
     }

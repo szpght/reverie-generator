@@ -44,7 +44,7 @@ namespace Reverie.CodeGeneration
             var varPair = Allocations.SingleOrDefault(x => x.Variable == variable);
             if (varPair != null)
             {
-                FreeRegisters.Add(varPair.Register.FullName);
+                FreeRegisters.Add(varPair.Register.Name);
                 Allocations.Remove(varPair);
             }
 
@@ -70,7 +70,7 @@ namespace Reverie.CodeGeneration
             {
                 var pair = Allocations.First();
                 Allocations.Remove(pair);
-                name = pair.Register.FullName;
+                name = pair.Register.Name;
             }
             return new Register(name);
         }
@@ -91,7 +91,7 @@ namespace Reverie.CodeGeneration
         {
             foreach (var pair in Allocations)
             {
-                FreeRegisters.Add(pair.Register.FullName);
+                FreeRegisters.Add(pair.Register.Name);
             }
             Allocations.Clear();
         }
@@ -104,7 +104,7 @@ namespace Reverie.CodeGeneration
                 Allocations.Remove(variableAllocation);
             }
 
-            var alloc = Allocations.SingleOrDefault(x => x.Register.FullName == registerName);
+            var alloc = Allocations.SingleOrDefault(x => x.Register.Name == registerName);
             if (alloc != null)
             {
                 Allocations.Remove(alloc);
@@ -131,7 +131,7 @@ namespace Reverie.CodeGeneration
             if (pair != null)
             {
                 Allocations.Remove(pair);
-                FreeRegisters.Add(pair.Register.FullName);
+                FreeRegisters.Add(pair.Register.Name);
             }
         }
 
@@ -148,14 +148,14 @@ namespace Reverie.CodeGeneration
         {
             foreach (var locked in LockedAllocations)
             {
-                FreeRegisters.Add(locked.Register.FullName);
+                FreeRegisters.Add(locked.Register.Name);
             }
             LockedAllocations.Clear();
         }
 
         private void ReleaseRegister(string name)
         {
-            var pair = Allocations.SingleOrDefault(x => x.Register.FullName == name);
+            var pair = Allocations.SingleOrDefault(x => x.Register.Name == name);
             if (pair != null)
             {
                 Allocations.Remove(pair);
@@ -168,7 +168,7 @@ namespace Reverie.CodeGeneration
             FreeRegisters = CallingConvention.GetVolatileRegisters()
                 .Union(CallingConvention.GetNonvolatileRegisters())
                 .Except(FreeSavedRegisters)
-                .Except(Allocations.Select(x => x.Register.FullName))
+                .Except(Allocations.Select(x => x.Register.Name))
                 .ToList();
         }
 

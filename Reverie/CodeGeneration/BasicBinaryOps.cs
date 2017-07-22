@@ -34,9 +34,9 @@ namespace Reverie.CodeGeneration
             Type = type;
         }
 
-        protected override Assembly GenerateOperation(Register a, Register b)
+        protected override Assembly GenerateOperation(Register registerA, Register registerB)
         {
-            return new Assembly($"{Instruction} {a.FullName}, {b.FullName}");
+            return new Assembly($"{Instruction} {registerA}, {registerB}");
         }
 
         public static BasicBinaryOp Add(Variable a, Variable b, Variable output)

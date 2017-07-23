@@ -20,7 +20,7 @@
             code.Add(Code);
             code.Add(new Jmp(beginning));
 
-            ctx.InvalidateRegisters();
+            ctx.Invalidate();
 
             beginning.Generate(asm, ctx);
             body.Generate(asm, ctx);

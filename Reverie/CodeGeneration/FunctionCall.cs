@@ -24,13 +24,12 @@ namespace Reverie.CodeGeneration
             asm.Add(cc.LoadArguments(Arguments, ctx));
             asm.Add($"call {Function}");
             asm.Add(cc.UnloadArguments(Arguments, ctx));
+            ctx.InvalidateVolatileRegisters();
             if (Result != null)
             {
-                ctx.InvalidateVariable(Result);
                 var resultRegister = new Register("rax");
-                asm.Add(Result.Store(resultRegister));
+                Result.Store(resultRegister, asm);
             }
-            ctx.AfterFunctionCall();
         }
     }
 }

@@ -4,11 +4,8 @@ namespace Reverie.CodeGeneration
 {
     public class SysVABICallingConvention : ICallingConvention
     {
-        private readonly IList<string> ArgumentRegisters;
-
         public SysVABICallingConvention()
         {
-            ArgumentRegisters = GetIntegerArgumentRegisters();
         }
 
         public IList<RegisterInfo> GetRegisters()
@@ -41,7 +38,9 @@ namespace Reverie.CodeGeneration
             for (i = 0; i < ArgumentRegisters.Count && i < arguments.Count; ++i)
             {
                 var arg = arguments[i];
-                ctx.LockFunctionArgument(arg, ArgumentRegisters[i], asm);
+                var reg = ArgumentRegisters[i];
+                ctx.LoadToRegister(arg, reg, asm);
+                ctx.Lock(reg);
             }
 
             for (int j = arguments.Count - 1; j >= i; --j)
@@ -101,5 +100,15 @@ namespace Reverie.CodeGeneration
                 "r9",
             };
         }
+
+        private List<Register> ArgumentRegisters = new List<Register>
+        {
+            new Register("rdi"),
+            new Register("rsi"),
+            new Register("rdx"),
+            new Register("rcx"),
+            new Register("r8"),
+            new Register("r9"),
+        };
     }
 }

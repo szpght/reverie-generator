@@ -4,12 +4,12 @@ using System.Linq;
 
 namespace Reverie.CodeGeneration
 {
-    public class NewContext
+    public class Context
     {
         public ICallingConvention CallingConvention { get; }
         private readonly RegisterContainer Registers;
 
-        public NewContext(ICallingConvention callingConvention)
+        public Context(ICallingConvention callingConvention)
         {
             CallingConvention = callingConvention;
             Registers = new RegisterContainer(callingConvention.GetRegisters());
@@ -36,7 +36,7 @@ namespace Reverie.CodeGeneration
             Registers.UseRegister(register);
         }
 
-        public void Store(Variable variable, Register register, Assembly assembly)
+        public void Store(Register register, Variable variable, Assembly assembly)
         {
             Registers.InvalidateVariable(variable);
             var info = Registers.GetRegisterInfo(register);
@@ -44,12 +44,28 @@ namespace Reverie.CodeGeneration
             variable.Store(register, assembly);
         }
 
-        public NewContext Copy()
+        public void Lock(Register register)
         {
-            return new NewContext(this);
+            var info = Registers.GetRegisterInfo(register);
+            info.Locked = true;
         }
 
-        public void Join(NewContext src)
+        public void Invalidate()
+        {
+            Registers.InvalidateRegisters();
+        }
+
+        public void InvalidateVolatileRegisters()
+        {
+            Registers.InvalidateVolatileRegisters();
+        }
+
+        public Context Copy()
+        {
+            return new Context(this);
+        }
+
+        public void Join(Context src)
         {
             foreach (var reg in Registers)
             {
@@ -61,7 +77,7 @@ namespace Reverie.CodeGeneration
             }
         }
 
-        private NewContext(NewContext ctx)
+        private Context(Context ctx)
         {
             CallingConvention = ctx.CallingConvention;
             var registers = ctx.Registers.Registers
@@ -183,9 +199,26 @@ namespace Reverie.CodeGeneration
             Dirty = info.Dirty;
             Locked = info.Locked;
         }
+
+        public override string ToString()
+        {
+            string variable;
+            if (Variable == null)
+            {
+                variable = "empty";
+            }
+            else
+            {
+                string vol = Nonvolatile ? "v" : "V";
+                string locked = Locked ? "L" : "l";
+                string dirty = Dirty ? "D" : "d";
+                variable = $"{Variable} {vol}{dirty}{locked}";
+            }
+            return $"{Register} -> {variable}";
+        }
     }
 
-    public class Context
+    /*public class Context2
     {
         public ICallingConvention CallingConvention { get; }
 
@@ -310,5 +343,5 @@ namespace Reverie.CodeGeneration
                 Variable = variable;
             }
         }
-    }
+    }*/
 }

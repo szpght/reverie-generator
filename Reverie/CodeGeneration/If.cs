@@ -24,7 +24,7 @@ namespace Reverie.CodeGeneration
 
         private void GenerateBody(Context ctx, Assembly asm)
         {
-            var elseCtx = ctx.GetCopy();
+            var elseCtx = ctx.Copy();
 
             if (LastPredicate.JumpToElse)
             {
@@ -38,7 +38,7 @@ namespace Reverie.CodeGeneration
                 asm.Add($"jmp {Code.EndLabel}");
                 Code.Generate(asm, ctx);
             }
-            ctx.Join(ctx, elseCtx);
+            ctx.Join(elseCtx);
         }
 
         private void GenerateChecks(IPredicate predicate, Context ctx, Assembly asm)

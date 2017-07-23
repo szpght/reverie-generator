@@ -28,6 +28,14 @@ namespace Reverie.CodeGeneration
             return info.Register;
         }
 
+        public void LoadToRegister(Variable variable, Register register, Assembly assembly)
+        {
+            variable.Load(register, assembly);
+            var info = Registers.GetRegisterInfo(register);
+            info.Variable = variable;
+            Registers.UseRegister(register);
+        }
+
         public void Store(Variable variable, Register register, Assembly assembly)
         {
             Registers.InvalidateVariable(variable);

@@ -6,8 +6,8 @@ namespace Reverie.CodeGeneration
     {
         public Label Function { get; }
         public IList<Variable> Arguments { get; }
-        public Variable Result { get; set; }
-        public ICallingConvention CallingConvention { get; set; }
+        public Variable Result { get; }
+        public ICallingConvention CallingConvention { get; }
 
         public FunctionCall(Label function, Variable result = null,
             IList<Variable> args = null, ICallingConvention callingConvention = null)

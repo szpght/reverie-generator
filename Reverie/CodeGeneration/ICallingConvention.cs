@@ -4,8 +4,8 @@ namespace Reverie.CodeGeneration
 {
     public interface ICallingConvention
     {
-        Assembly LoadArguments(IList<Variable> arguments, Context ctx);
-        Assembly UnloadArguments(IList<Variable> arguments, Context ctx);
+        void LoadArguments(IList<Variable> arguments, Assembly asm, Context ctx);
+        void UnloadArguments(IList<Variable> arguments, Assembly asm, Context ctx);
         IList<RegisterInfo> GetRegisters();
     }
 }

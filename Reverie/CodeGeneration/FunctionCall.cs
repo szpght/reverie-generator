@@ -21,9 +21,9 @@ namespace Reverie.CodeGeneration
         public void Generate(Assembly asm, Context ctx)
         {
             var cc = ctx.CallingConvention;
-            asm.Add(cc.LoadArguments(Arguments, ctx));
+            cc.LoadArguments(Arguments, asm, ctx);
             asm.Add($"call {Function}");
-            asm.Add(cc.UnloadArguments(Arguments, ctx));
+            cc.UnloadArguments(Arguments, asm, ctx);
             ctx.InvalidateVolatileRegisters();
             if (Result != null)
             {

@@ -25,9 +25,8 @@ namespace Reverie.CodeGeneration
             };
         }
 
-        public Assembly LoadArguments(IList<Variable> arguments, Context ctx)
+        public void LoadArguments(IList<Variable> arguments, Assembly asm, Context ctx)
         {
-            var asm = new Assembly();
             int i;
             for (i = 0; i < ArgumentRegisters.Count && i < arguments.Count; ++i)
             {
@@ -45,13 +44,12 @@ namespace Reverie.CodeGeneration
 
             // number of float arguments in variadic function
             asm.Add("xor rax, rax");
-            return asm;
         }
 
-        public Assembly UnloadArguments(IList<Variable> arguments, Context ctx)
+        public void UnloadArguments(IList<Variable> arguments, Assembly asm, Context ctx)
         {
             int stackArguments = arguments.Count - ArgumentRegisters.Count;
-            return new Assembly($"add rsp, {8 * stackArguments}");
+            asm.Add($"add rsp, {8 * stackArguments}");
         }
 
         private readonly List<Register> ArgumentRegisters = new List<Register>

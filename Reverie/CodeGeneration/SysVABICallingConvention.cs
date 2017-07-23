@@ -52,6 +52,12 @@ namespace Reverie.CodeGeneration
             asm.Add($"add rsp, {8 * stackArguments}");
         }
 
+        public void StoreResult(Variable result, Assembly asm, Context ctx)
+        {
+            var resultReg = new Register("rax");
+            ctx.Store(resultReg, result, asm);
+        }
+
         private readonly List<Register> ArgumentRegisters = new List<Register>
         {
             new Register("rdi"),

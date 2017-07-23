@@ -28,7 +28,7 @@ namespace Reverie.CodeGeneration
             if (Result != null)
             {
                 var resultRegister = new Register("rax");
-                Result.Store(resultRegister, asm);
+                ctx.Store(resultRegister, Result, asm);
             }
         }
     }

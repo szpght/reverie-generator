@@ -16,8 +16,6 @@ namespace Reverie.CodeGeneration
                 new RegisterInfo("rbx", true),
                 new RegisterInfo("rcx", false),
                 new RegisterInfo("rdx", false),
-                new RegisterInfo("rsp", false),
-                new RegisterInfo("rbp", false),
                 new RegisterInfo("rdi", false),
                 new RegisterInfo("rsi", false),
                 new RegisterInfo("r8", false),

@@ -17,7 +17,7 @@ namespace Reverie.CodeGeneration
 
         public Register Load(Variable variable, Assembly assembly)
         {
-            var info = Registers.GetVariableInfo(variable);
+            var info = Registers.GetUsableVariableInfo(variable);
             if (info == null)
             {
                 info = Registers.GetFreeRegisterInfo();
@@ -96,9 +96,9 @@ namespace Reverie.CodeGeneration
             Registers = registers;
         }
 
-        public RegisterInfo GetVariableInfo(Variable variable)
+        public RegisterInfo GetUsableVariableInfo(Variable variable)
         {
-            return Registers.SingleOrDefault(x => x.Variable == variable);
+            return Registers.SingleOrDefault(x => x.Variable == variable && !x.Locked);
         }
 
         public RegisterInfo GetRegisterInfo(Register register)
@@ -209,11 +209,12 @@ namespace Reverie.CodeGeneration
             }
             else
             {
-                string vol = Nonvolatile ? "v" : "V";
-                string locked = Locked ? "L" : "l";
-                string dirty = Dirty ? "D" : "d";
-                variable = $"{Variable} {vol}{dirty}{locked}";
+                variable = Variable.ToString();
             }
+            string vol = Nonvolatile ? "v" : "V";
+            string locked = Locked ? "Q" : "q";
+            string dirty = Dirty ? "D" : "d";
+            variable = $"{variable} {vol} {dirty} {locked}";
             return $"{Register} -> {variable}";
         }
     }

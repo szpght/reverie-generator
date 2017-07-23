@@ -6,9 +6,6 @@ namespace Reverie.CodeGeneration
     {
         Assembly LoadArguments(IList<Variable> arguments, Context ctx);
         Assembly UnloadArguments(IList<Variable> arguments, Context ctx);
-        IList<string> GetVolatileRegisters();
-        IList<string> GetNonvolatileRegisters();
-        IList<string> GetIntegerArgumentRegisters();
         IList<RegisterInfo> GetRegisters();
     }
 }

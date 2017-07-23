@@ -2,12 +2,8 @@
 
 namespace Reverie.CodeGeneration
 {
-    public class SysVABICallingConvention : ICallingConvention
+    public class SysVAbiCallingConvention : ICallingConvention
     {
-        public SysVABICallingConvention()
-        {
-        }
-
         public IList<RegisterInfo> GetRegisters()
         {
             return new List<RegisterInfo>
@@ -54,52 +50,11 @@ namespace Reverie.CodeGeneration
 
         public Assembly UnloadArguments(IList<Variable> arguments, Context ctx)
         {
-
             int stackArguments = arguments.Count - ArgumentRegisters.Count;
             return new Assembly($"add rsp, {8 * stackArguments}");
         }
 
-        public IList<string> GetVolatileRegisters()
-        {
-            return new List<string>()
-            {
-                "rcx",
-                "rdx",
-                "rsi",
-                "rdi",
-                "r8",
-                "r9",
-                "r10",
-                "r11",
-            };
-        }
-
-        public IList<string> GetNonvolatileRegisters()
-        {
-            return new List<string>()
-            {
-                "rbx",
-                "r12",
-                "r13",
-                "r14",
-                "r15",
-            };
-        }
-
-        public IList<string> GetIntegerArgumentRegisters()
-        {
-            return new List<string>
-            {
-                "rdi",
-                "rsi",
-                "rdx",
-                "rcx",
-                "r8",
-                "r9",
-            };
-        }
-
-        private List<Register> ArgumentRegisters = new List<Register>
+        private readonly List<Register> ArgumentRegisters = new List<Register>
         {
             new Register("rdi"),
             new Register("rsi"),

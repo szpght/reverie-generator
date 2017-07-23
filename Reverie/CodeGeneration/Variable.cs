@@ -15,7 +15,7 @@ namespace Reverie.CodeGeneration
             Sign = sign;
         }
 
-        public Assembly Load(Register register)
+        public void Load(Register register, Assembly assembly)
         {
             string movInstruction = "mov";
             string registerName = register.Name;
@@ -36,12 +36,12 @@ namespace Reverie.CodeGeneration
             {
                 movInstruction = "movsxd";
             }
-            return new Assembly($"{movInstruction} {registerName}, {ToString()}");
+            assembly.Add($"{movInstruction} {registerName}, {ToString()}");
         }
 
-        public Assembly Store(Register register)
+        public void Store(Register register, Assembly assembly)
         {
-            return new Assembly($"mov {ToString()}, {register.WithSize(Size)}");
+            assembly.Add($"mov {ToString()}, {register.WithSize(Size)}");
         }
 
         public override string ToString()

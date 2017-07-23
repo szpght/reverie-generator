@@ -1,50 +1,143 @@
+using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 
 namespace Reverie.CodeGeneration
 {
-    public interface IArchitecture
-    {
-        IList<RegisterInfo> GetRegisters();
-    }
-
     public class NewContext
     {
-        public IArchitecture Architecture { get; }
         public ICallingConvention CallingConvention { get; }
-        private IList<RegisterInfo> Registers;
+        private readonly RegisterContainer Registers;
 
-        public NewContext(IArchitecture architecture, ICallingConvention callingConvention)
+        public NewContext(ICallingConvention callingConvention)
         {
-            Architecture = architecture;
             CallingConvention = callingConvention;
-            Registers = architecture.GetRegisters();
+            Registers = new RegisterContainer(callingConvention.GetRegisters());
         }
 
         public Register Load(Variable variable, Assembly assembly)
         {
-            var alloc = Registers.SingleOrDefault(x => x.Variable == variable);
-            if (alloc == null)
+            var info = Registers.GetVariableInfo(variable);
+            if (info == null)
             {
-                alloc = GetRegister();
-                alloc.Variable = variable;
-                var loadAssembly = variable.Load(alloc.Register);
-                assembly.Add(loadAssembly);
+                info = Registers.GetFreeRegisterInfo();
+                info.Variable = variable;
+                variable.Load(info.Register, assembly);
             }
-            ToEnd(alloc);
-            return alloc.Register;
+            Registers.UseRegister(info.Register);
+            return info.Register;
         }
 
-        private RegisterInfo GetRegister()
+        public void Store(Variable variable, Register register, Assembly assembly)
         {
-            return Registers
-                .First(x => !x.Locked);
+            Registers.InvalidateVariable(variable);
+            var info = Registers.GetRegisterInfo(register);
+            info.Variable = variable;
+            variable.Store(register, assembly);
         }
 
-        private void ToEnd(RegisterInfo info)
+        public NewContext Copy()
         {
+            return new NewContext(this);
+        }
+
+        public void Join(NewContext src)
+        {
+            foreach (var reg in Registers)
+            {
+                var srcReg = src.Registers.GetRegisterInfo(reg.Register);
+                if (srcReg.Dirty)
+                    reg.Dirty = true;
+                if (srcReg.Variable != reg.Variable)
+                    reg.Variable = null;
+            }
+        }
+
+        private NewContext(NewContext ctx)
+        {
+            CallingConvention = ctx.CallingConvention;
+            var registers = ctx.Registers.Registers
+                .Select(x => new RegisterInfo(x))
+                .ToList();
+            Registers = new RegisterContainer(registers);
+        }
+    }
+
+    public class RegisterContainer : IEnumerable<RegisterInfo>
+    {
+        public IList<RegisterInfo> Registers { get; }
+
+        public RegisterContainer(IList<RegisterInfo> registers)
+        {
+            Registers = registers;
+        }
+
+        public RegisterInfo GetVariableInfo(Variable variable)
+        {
+            return Registers.SingleOrDefault(x => x.Variable == variable);
+        }
+
+        public RegisterInfo GetRegisterInfo(Register register)
+        {
+            return Registers.SingleOrDefault(x => x.Register == register);
+        }
+
+        public RegisterInfo GetFreeRegisterInfo()
+        {
+            return Registers.FirstOrDefault(x => x.Empty) ?? Registers.First(x => !x.Locked);
+        }
+
+        public void UseRegister(Register register)
+        {
+            var info = GetRegisterInfo(register);
             Registers.Remove(info);
             Registers.Add(info);
+        }
+
+        public void LockRegister(Register register)
+        {
+            var info = GetRegisterInfo(register);
+            info.Locked = true;
+        }
+
+        public void InvalidateVariable(Variable variable)
+        {
+            var info = Registers
+                .SingleOrDefault(x => x.Variable == variable);
+            if (info != null)
+            {
+                info.Variable = null;
+            }
+        }
+
+        public void InvalidateVolatileRegisters()
+        {
+            var regs = Registers
+                .Where(x => !x.Nonvolatile);
+            foreach (var reg in regs)
+            {
+                reg.Variable = null;
+                reg.Locked = false;
+            }
+        }
+
+        public void InvalidateRegisters()
+        {
+            foreach (var info in Registers)
+            {
+                info.Variable = null;
+                info.Locked = false;
+            }
+        }
+
+        public IEnumerator<RegisterInfo> GetEnumerator()
+        {
+            return Registers.GetEnumerator();
+        }
+
+        IEnumerator IEnumerable.GetEnumerator()
+        {
+            return GetEnumerator();
         }
     }
 
@@ -54,6 +147,7 @@ namespace Reverie.CodeGeneration
         public bool Nonvolatile { get; }
         public bool Dirty { get; set; }
         public bool Locked { get; set; }
+        public bool Empty => variable_ == null;
 
         public Variable Variable
         {
@@ -73,6 +167,14 @@ namespace Reverie.CodeGeneration
             Register = new Register(register);
             Nonvolatile = nonvolatile;
         }
+
+        public RegisterInfo(RegisterInfo info)
+        {
+            Register = info.Register;
+            Nonvolatile = info.Nonvolatile;
+            Dirty = info.Dirty;
+            Locked = info.Locked;
+        }
     }
 
     public class Context
@@ -89,62 +191,6 @@ namespace Reverie.CodeGeneration
             CallingConvention = callingConvention;
             FreeRegisters = CallingConvention.GetVolatileRegisters();
             FreeSavedRegisters = CallingConvention.GetNonvolatileRegisters();
-        }
-
-        public Register Load(Variable variable, Assembly assembly)
-        {
-            var pair = Allocations.SingleOrDefault(x => x.Variable == variable);
-            if (pair != null)
-            {
-                Allocations.Remove(pair);
-                Allocations.Add(pair);
-                return pair.Register;
-            }
-            var register = GetFreeRegister(variable.Size);
-            var loadAssembly = variable.Load(register);
-            assembly.Add(loadAssembly);
-            pair = new RegisterVariablePair(register, variable);
-            Allocations.Add(pair);
-            return register;
-        }
-
-        public void Store(Register register, Variable variable, Assembly assembly)
-        {
-            var storeAssembly = variable.Store(register);
-            assembly.Add(storeAssembly);
-
-            var varPair = Allocations.SingleOrDefault(x => x.Variable == variable);
-            if (varPair != null)
-            {
-                FreeRegisters.Add(varPair.Register.Name);
-                Allocations.Remove(varPair);
-            }
-
-            Allocations.RemoveAll(x => x.Register == register);
-            var pair = new RegisterVariablePair(register, variable);
-            Allocations.Add(pair);
-        }
-
-        private Register GetFreeRegister(VariableSize size)
-        {
-            string name;
-            if (FreeRegisters.Any())
-            {
-                name = FreeRegisters.Last();
-                FreeRegisters.Remove(name);
-            }
-            else if (FreeSavedRegisters.Any())
-            {
-                name = FreeSavedRegisters.Last();
-                FreeSavedRegisters.Remove(name);
-            }
-            else
-            {
-                var pair = Allocations.First();
-                Allocations.Remove(pair);
-                name = pair.Register.Name;
-            }
-            return new Register(name);
         }
 
         public Context GetCopy()
@@ -207,15 +253,6 @@ namespace Reverie.CodeGeneration
             }
         }
 
-        private void InvalidateUnsavedRegisters()
-        {
-            var unsaved = CallingConvention.GetVolatileRegisters();
-            foreach (var reg in unsaved)
-            {
-                ReleaseRegister(reg);
-            }
-        }
-
         private void UnlockArguments()
         {
             foreach (var locked in LockedAllocations)
@@ -223,16 +260,6 @@ namespace Reverie.CodeGeneration
                 FreeRegisters.Add(locked.Register.Name);
             }
             LockedAllocations.Clear();
-        }
-
-        private void ReleaseRegister(string name)
-        {
-            var pair = Allocations.SingleOrDefault(x => x.Register.Name == name);
-            if (pair != null)
-            {
-                Allocations.Remove(pair);
-                FreeRegisters.Add(name);
-            }
         }
 
         private void JoinFreeRegisters(Context a, Context b)
@@ -262,14 +289,6 @@ namespace Reverie.CodeGeneration
                 }
             }
             Allocations = newAllocations;
-        }
-
-        private Context(IList<RegisterVariablePair> allocations, IList<string> freeRegisters,
-            IList<string> freeSavedRegisters)
-        {
-            Allocations = new List<RegisterVariablePair>(allocations);
-            FreeRegisters = new List<string>(freeRegisters);
-            FreeSavedRegisters = new List<string>(freeSavedRegisters);
         }
 
         private class RegisterVariablePair

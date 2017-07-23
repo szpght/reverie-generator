@@ -1,3 +1,4 @@
+using System;
 using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
@@ -108,7 +109,9 @@ namespace Reverie.CodeGeneration
 
         public RegisterInfo GetFreeRegisterInfo()
         {
-            return Registers.FirstOrDefault(x => x.Empty) ?? Registers.First(x => !x.Locked);
+            return Registers.FirstOrDefault(x => x.Empty && !x.Nonvolatile)
+                ?? Registers.FirstOrDefault(x => x.Empty)
+                ?? Registers.First(x => !x.Locked);
         }
 
         public void UseRegister(Register register)
@@ -180,10 +183,12 @@ namespace Reverie.CodeGeneration
             set
             {
                 variable_ = value;
-                Dirty = true;
+                if (value != null)
+                {
+                    Dirty = true;
+                }
             }
         }
-
 
         private Variable variable_;
 

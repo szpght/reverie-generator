@@ -126,11 +126,12 @@ namespace Reverie.CodeGeneration
 
         public void InvalidateVariable(Variable variable)
         {
-            var info = Registers
-                .SingleOrDefault(x => x.Variable == variable);
-            if (info != null)
+            var infos = Registers
+                .Where(x => x.Variable == variable);
+            foreach (var info in infos)
             {
                 info.Variable = null;
+                info.Locked = false;
             }
         }
 

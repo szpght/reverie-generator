@@ -31,8 +31,7 @@ namespace Reverie
                 b,
                 output
             };
-            var call = new FunctionCall(new Label("dupa", LabelType.Global), arguments);
-            call.Result = output;
+            var call = new FunctionCall(new Label("dupa"), output, arguments);
             GenerateAndPrint(call, ctx);
 
 

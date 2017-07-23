@@ -5,22 +5,22 @@ namespace Reverie.CodeGeneration
     public class FunctionCall : ICode
     {
         public Label Function { get; }
-        public IList<Variable> Arguments { get; set; }
+        public IList<Variable> Arguments { get; }
         public Variable Result { get; set; }
+        public ICallingConvention CallingConvention { get; set; }
 
-        public FunctionCall(Label function) : this(function, new List<Variable>())
-        {
-        }
-
-        public FunctionCall(Label function, IList<Variable> args)
+        public FunctionCall(Label function, Variable result = null,
+            IList<Variable> args = null, ICallingConvention callingConvention = null)
         {
             Function = function;
-            Arguments = args;
+            Arguments = args ?? new List<Variable>();
+            Result = result;
+            CallingConvention = callingConvention;
         }
 
         public void Generate(Assembly asm, Context ctx)
         {
-            var cc = ctx.CallingConvention;
+            var cc = CallingConvention ?? ctx.CallingConvention;
             cc.LoadArguments(Arguments, asm, ctx);
             asm.Add($"call {Function}");
             cc.UnloadArguments(Arguments, asm, ctx);

@@ -109,6 +109,7 @@ namespace Reverie.CodeGeneration
         public RegisterInfo GetFreeRegisterInfo()
         {
             return Registers.FirstOrDefault(x => x.Empty && !x.Nonvolatile)
+                ?? Registers.FirstOrDefault(x => x.Empty && x.Dirty)
                 ?? Registers.FirstOrDefault(x => x.Empty)
                 ?? Registers.First(x => !x.Locked);
         }

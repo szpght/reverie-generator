@@ -59,6 +59,8 @@
     <Compile Include="CodeGeneration\Predicates.cs" />
     <Compile Include="CodeGeneration\Push.cs" />
     <Compile Include="CodeGeneration\Register.cs" />
+    <Compile Include="CodeGeneration\RegisterContainer.cs" />
+    <Compile Include="CodeGeneration\RegisterInfo.cs" />
     <Compile Include="CodeGeneration\Relation.cs" />
     <Compile Include="CodeGeneration\SysVABICallingConvention.cs" />
     <Compile Include="CodeGeneration\Variable.cs" />

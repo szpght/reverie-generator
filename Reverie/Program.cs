@@ -14,11 +14,12 @@ namespace Reverie
             var a = new Variable("rsp", 0, VariableSize.Qword);
             var b = new Variable("rsp", 8, VariableSize.Qword);
             var output = new Variable("rsp", 16, VariableSize.Qword);
+            var modulo = new Variable("rsp", 24, VariableSize.Qword);
             var cc = new SysVAbiCallingConvention();
             var ctx = new Context(cc);
             var add = BasicBinaryOp.Add(a, b, output);
             var sub = BasicBinaryOp.Subtract(a, b, output);
-            var mult = new Multiplication(a, b, output);
+            var mult = new Division(a, b, output, modulo);
 
             GenerateAndPrint(mult, ctx);
 

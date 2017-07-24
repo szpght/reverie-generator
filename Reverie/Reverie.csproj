@@ -47,6 +47,7 @@
     <Compile Include="CodeGeneration\BinaryOp.cs" />
     <Compile Include="CodeGeneration\CodeBlock.cs" />
     <Compile Include="CodeGeneration\Context.cs" />
+    <Compile Include="CodeGeneration\Division.cs" />
     <Compile Include="CodeGeneration\FunctionCall.cs" />
     <Compile Include="CodeGeneration\IBinaryOp.cs" />
     <Compile Include="CodeGeneration\ICallingConvention.cs" />

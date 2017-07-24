@@ -5,7 +5,6 @@ namespace Reverie.CodeGeneration
     public class CodeBlock : ICode
     {
         public IList<ICode> Code { get; }
-        public Variable Result { get; }
         public Label BeginLabel { get; }
         public Label EndLabel { get; }
 
@@ -16,7 +15,6 @@ namespace Reverie.CodeGeneration
         public CodeBlock(IList<ICode> code, Variable result)
         {
             Code = code;
-            Result = result;
             BeginLabel = Label.New(LabelType.Local);
             EndLabel = Label.New(LabelType.Local);
         }

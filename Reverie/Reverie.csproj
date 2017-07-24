@@ -54,6 +54,7 @@
     <Compile Include="CodeGeneration\If.cs" />
     <Compile Include="CodeGeneration\IPredicate.cs" />
     <Compile Include="CodeGeneration\Label.cs" />
+    <Compile Include="CodeGeneration\Multiplication.cs" />
     <Compile Include="CodeGeneration\Predicates.cs" />
     <Compile Include="CodeGeneration\Push.cs" />
     <Compile Include="CodeGeneration\Register.cs" />

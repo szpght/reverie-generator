@@ -50,6 +50,12 @@ namespace Reverie.CodeGeneration
             info.Locked = true;
         }
 
+        public void Unlock(Register register)
+        {
+            var info = Registers.GetRegisterInfo(register);
+            info.Locked = false;
+        }
+
         public void Invalidate()
         {
             Registers.InvalidateRegisters();

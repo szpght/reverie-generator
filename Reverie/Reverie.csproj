@@ -48,6 +48,7 @@
     <Compile Include="CodeGeneration\CodeBlock.cs" />
     <Compile Include="CodeGeneration\Context.cs" />
     <Compile Include="CodeGeneration\FunctionCall.cs" />
+    <Compile Include="CodeGeneration\IBinaryOp.cs" />
     <Compile Include="CodeGeneration\ICallingConvention.cs" />
     <Compile Include="CodeGeneration\ICode.cs" />
     <Compile Include="CodeGeneration\If.cs" />

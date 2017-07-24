@@ -2,7 +2,7 @@ using System;
 
 namespace Reverie.CodeGeneration
 {
-    public abstract class BinaryOp : ICode
+    public abstract class BinaryOp : IBinaryOp
     {
         public Variable A { get; }
         public Variable B { get; }

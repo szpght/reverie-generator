@@ -18,6 +18,9 @@ namespace Reverie
             var ctx = new Context(cc);
             var add = BasicBinaryOp.Add(a, b, output);
             var sub = BasicBinaryOp.Subtract(a, b, output);
+            var mult = new Multiplication(a, b, output);
+
+            GenerateAndPrint(mult, ctx);
 
             var arguments = new List<Variable>
             {

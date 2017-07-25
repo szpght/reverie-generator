@@ -63,6 +63,7 @@
     <Compile Include="CodeGeneration\RegisterContainer.cs" />
     <Compile Include="CodeGeneration\RegisterInfo.cs" />
     <Compile Include="CodeGeneration\Relation.cs" />
+    <Compile Include="CodeGeneration\StackVariable.cs" />
     <Compile Include="CodeGeneration\SysVABICallingConvention.cs" />
     <Compile Include="CodeGeneration\Variable.cs" />
     <Compile Include="CodeGeneration\VariableSize.cs" />

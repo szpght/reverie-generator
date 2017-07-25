@@ -1,6 +1,7 @@
 ﻿using Newtonsoft.Json;
 using System;
 using System.Collections.Generic;
+using System.IO;
 using Reverie.CodeGeneration;
 
 namespace Reverie
@@ -9,6 +10,20 @@ namespace Reverie
     {
         static void Main(string[] args)
         {
+            Console.WriteLine(File.ReadAllText("CodeHeader.asm"));
+            var hello = new CString("Hello world!");
+            var putsLabel = new Label("puts");
+            var puts = new FunctionCall(putsLabel);
+            puts.Arguments.Add(hello);
+            var function = new Function("main");
+            function.Code.Add(puts);
+            function.Strings.Add(hello);
+
+            var cc = new SysVAbiCallingConvention();
+            var ctx = new Context(cc);
+            GenerateAndPrint(function, ctx);
+
+            return;
             //var code = File.ReadAllText("ast.json");
             //dynamic ast = JsonConvert.DeserializeObject(code);
             //var a = new StackVariable("rsp", 0, VariableSize.Qword);
@@ -17,8 +32,6 @@ namespace Reverie
             var b = new CString("lelxd");
             var output = new StackVariable("rsp", 16, VariableSize.Qword);
             var modulo = new StackVariable("rsp", 24, VariableSize.Qword);
-            var cc = new SysVAbiCallingConvention();
-            var ctx = new Context(cc);
             var add = BasicBinaryOp.Add(a, b, output);
             var sub = BasicBinaryOp.Subtract(a, b, output);
             var mult = new Division(a, b, output, modulo);

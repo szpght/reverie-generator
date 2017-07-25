@@ -6,15 +6,18 @@ namespace Reverie.CodeGeneration
     {
         public string Name { get; set; }
         public CodeBlock Code { get; set; }
-        public IList<Variable> Variables { get; set; }
+        public List<Variable> Variables { get; set; }
+        public List<Variable> Arguments { get; set; }
         public Variable ReturnedValue { get; set; }
+        public List<CString> Strings { get; set; }
 
-        public Function(string name, CodeBlock code, IList<Variable> variables, Variable returnedValue)
+        public Function(string name)
         {
             Name = name;
-            Code = code;
-            Variables = variables;
-            ReturnedValue = returnedValue;
+            Code = new CodeBlock();
+            Variables = new List<Variable>();
+            Arguments = new List<Variable>();
+            Strings = new List<CString>();
         }
 
         public void Generate(Assembly asm, Context ctx)
@@ -22,11 +25,15 @@ namespace Reverie.CodeGeneration
             GeneratePrologue(asm);
             Code.Generate(asm, ctx);
             GenerateEpilogue(asm, ctx);
+            GenerateRodata(asm, ctx);
         }
 
         private void GeneratePrologue(Assembly asm)
         {
-            new Label(Name).Generate(asm, null);
+            asm.Add("SECTION .text");
+            var label = new Label(Name);
+            asm.Add($"global {label}");
+            label.Generate(asm, null);
             asm.Add("push rbp");
             asm.Add("mov rbp, rsp");
             asm.Add($"sub rsp, {GetStackSpaceSize()}");
@@ -41,6 +48,15 @@ namespace Reverie.CodeGeneration
             asm.Add("mov rsp, rbp");
             asm.Add("pop rbp");
             asm.Add("ret");
+        }
+
+        private void GenerateRodata(Assembly asm, Context ctx)
+        {
+            asm.Add("SECTION .rodata");
+            foreach (var s in Strings)
+            {
+                s.GenerateRepresentation(asm);
+            }
         }
 
         private int GetStackSpaceSize()

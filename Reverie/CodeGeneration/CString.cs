@@ -41,5 +41,15 @@ namespace Reverie.CodeGeneration
         {
             return $"{Label.Name}: {Content}";
         }
+
+        public override bool Equals(object obj)
+        {
+            return Content.Equals(obj);
+        }
+
+        public override int GetHashCode()
+        {
+            return Content.GetHashCode();
+        }
     }
 }

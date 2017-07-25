@@ -17,7 +17,6 @@ namespace Reverie
             puts.Arguments.Add(hello);
             var function = new Function("main");
             function.Code.Add(puts);
-            function.Strings.Add(hello);
 
             var cc = new SysVAbiCallingConvention();
             var ctx = new Context(cc);

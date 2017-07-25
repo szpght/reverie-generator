@@ -9,7 +9,6 @@ namespace Reverie.CodeGeneration
         public List<Variable> Variables { get; set; }
         public List<Variable> Arguments { get; set; }
         public Variable ReturnedValue { get; set; }
-        public List<CString> Strings { get; set; }
 
         public Function(string name)
         {
@@ -17,7 +16,6 @@ namespace Reverie.CodeGeneration
             Code = new CodeBlock();
             Variables = new List<Variable>();
             Arguments = new List<Variable>();
-            Strings = new List<CString>();
         }
 
         public void Generate(Assembly asm, Context ctx)
@@ -53,7 +51,7 @@ namespace Reverie.CodeGeneration
         private void GenerateRodata(Assembly asm, Context ctx)
         {
             asm.Add("SECTION .rodata");
-            foreach (var s in Strings)
+            foreach (var s in ctx.Strings)
             {
                 s.GenerateRepresentation(asm);
             }

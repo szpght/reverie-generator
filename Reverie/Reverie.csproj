@@ -46,7 +46,9 @@
     <Compile Include="CodeGeneration\BasicOps.cs" />
     <Compile Include="CodeGeneration\BinaryOp.cs" />
     <Compile Include="CodeGeneration\CodeBlock.cs" />
+    <Compile Include="CodeGeneration\ConstantInteger.cs" />
     <Compile Include="CodeGeneration\Context.cs" />
+    <Compile Include="CodeGeneration\CString.cs" />
     <Compile Include="CodeGeneration\Division.cs" />
     <Compile Include="CodeGeneration\Function.cs" />
     <Compile Include="CodeGeneration\FunctionCall.cs" />

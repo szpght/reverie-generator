@@ -2,8 +2,10 @@
 {
     public class StackVariable : Variable
     {
-        public Label Base { get; set; }
-        public long Offset { get; set; }
+        public override bool Sign { get; }
+        public override VariableSize Size { get; }
+        public Label Base { get; }
+        public long Offset { get; }
 
         public StackVariable(string baseLabel, long offset, VariableSize size, bool sign = false)
         {

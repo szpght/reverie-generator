@@ -11,8 +11,10 @@ namespace Reverie
         {
             //var code = File.ReadAllText("ast.json");
             //dynamic ast = JsonConvert.DeserializeObject(code);
-            var a = new StackVariable("rsp", 0, VariableSize.Qword);
-            var b = new StackVariable("rsp", 8, VariableSize.Qword);
+            //var a = new StackVariable("rsp", 0, VariableSize.Qword);
+            //var b = new StackVariable("rsp", 8, VariableSize.Qword);
+            var a = new ConstantInteger(666);
+            var b = new CString("lelxd");
             var output = new StackVariable("rsp", 16, VariableSize.Qword);
             var modulo = new StackVariable("rsp", 24, VariableSize.Qword);
             var cc = new SysVAbiCallingConvention();

@@ -49,6 +49,10 @@ namespace Reverie.CodeGeneration
         public void UnloadArguments(IList<Variable> arguments, Assembly asm, Context ctx)
         {
             int stackArguments = arguments.Count - ArgumentRegisters.Count;
+            if (stackArguments < 0)
+            {
+                stackArguments = 0;
+            }
             asm.Add($"add rsp, {8 * stackArguments}");
         }
 

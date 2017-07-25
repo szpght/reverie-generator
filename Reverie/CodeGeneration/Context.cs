@@ -1,4 +1,3 @@
-using System.Collections.Generic;
 using System.Linq;
 
 namespace Reverie.CodeGeneration
@@ -6,22 +5,19 @@ namespace Reverie.CodeGeneration
     public class Context
     {
         public ICallingConvention CallingConvention { get; }
-        public ISet<CString> Strings { get; }
+        public VariableAccounter VariableAccounter { get; }
         private readonly RegisterContainer Registers;
 
         public Context(ICallingConvention callingConvention)
         {
             CallingConvention = callingConvention;
             Registers = new RegisterContainer(callingConvention.GetRegisters());
-            Strings = new HashSet<CString>();
+            VariableAccounter = new VariableAccounter();
         }
 
         public Register Load(Variable variable, Assembly assembly)
         {
-            if (variable is CString cString)
-            {
-                Strings.Add(cString);
-            }
+            VariableAccounter.AccountVariable(variable);
 
             var info = Registers.GetUsableVariableInfo(variable);
             if (info == null)
@@ -36,10 +32,7 @@ namespace Reverie.CodeGeneration
 
         public void LoadToRegister(Variable variable, Register register, Assembly assembly)
         {
-            if (variable is CString cString)
-            {
-                Strings.Add(cString);
-            }
+            VariableAccounter.AccountVariable(variable);
 
             variable.Load(register, assembly);
             var info = Registers.GetRegisterInfo(register);
@@ -101,6 +94,7 @@ namespace Reverie.CodeGeneration
                 .Select(x => new RegisterInfo(x))
                 .ToList();
             Registers = new RegisterContainer(registers);
+            VariableAccounter = ctx.VariableAccounter;
         }
     }
 }

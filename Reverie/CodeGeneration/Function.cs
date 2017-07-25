@@ -10,6 +10,9 @@ namespace Reverie.CodeGeneration
         public List<Variable> Arguments { get; set; }
         public Variable ReturnedValue { get; set; }
 
+        private IEnumerable<CString> Strings;
+        private IEnumerable<StackVariable> StackVariables;
+
         public Function(string name)
         {
             Name = name;
@@ -20,6 +23,7 @@ namespace Reverie.CodeGeneration
 
         public void Generate(Assembly asm, Context ctx)
         {
+            DetectVariables(ctx);
             GeneratePrologue(asm);
             Code.Generate(asm, ctx);
             GenerateEpilogue(asm, ctx);
@@ -51,7 +55,7 @@ namespace Reverie.CodeGeneration
         private void GenerateRodata(Assembly asm, Context ctx)
         {
             asm.Add("SECTION .rodata");
-            foreach (var s in ctx.Strings)
+            foreach (var s in Strings)
             {
                 s.GenerateRepresentation(asm);
             }
@@ -67,6 +71,16 @@ namespace Reverie.CodeGeneration
                 count += 1;
             }
             return count * 8;
+        }
+
+        private void DetectVariables(Context ctx)
+        {
+            var tempCtx = new Context(ctx.CallingConvention);
+            var asm = new Assembly();
+            Code.Generate(asm, tempCtx);
+            var accounter = tempCtx.VariableAccounter;
+            Strings = accounter.GetStrings();
+            StackVariables = accounter.GetStackVariables();
         }
     }
 }

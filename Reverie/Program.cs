@@ -17,7 +17,24 @@ namespace Reverie
             puts.Arguments.Add(hello);
             var function = new Function("main");
             function.Code.Add(puts);
-
+            var var1 = new StackVariable(VariableSize.Qword);
+            var var2 = new StackVariable(VariableSize.Qword);
+            var var3 = new StackVariable(VariableSize.Qword);
+            var var4 = new StackVariable(VariableSize.Qword);
+            var var5 = new StackVariable(VariableSize.Qword);
+            var var6 = new StackVariable(VariableSize.Qword);
+            var var7 = new StackVariable(VariableSize.Qword);
+            var var8 = new StackVariable(VariableSize.Qword);
+            function.Arguments.Add(var1);
+            function.Arguments.Add(var2);
+            function.Arguments.Add(var3);
+            function.Arguments.Add(var4);
+            function.Arguments.Add(var5);
+            function.Arguments.Add(var6);
+            function.Arguments.Add(var7);
+            function.Arguments.Add(var8);
+            var ad = BasicBinaryOp.Add(var7, var8, var7);
+            function.Code.Add(ad);
             var cc = new SysVAbiCallingConvention();
             var ctx = new Context(cc);
             GenerateAndPrint(function, ctx);
@@ -29,8 +46,8 @@ namespace Reverie
             //var b = new StackVariable("rsp", 8, VariableSize.Qword);
             var a = new ConstantInteger(666);
             var b = new CString("lelxd");
-            var output = new StackVariable("rsp", 16, VariableSize.Qword);
-            var modulo = new StackVariable("rsp", 24, VariableSize.Qword);
+            var output = new StackVariable(VariableSize.Qword);
+            var modulo = new StackVariable(VariableSize.Qword);
             var add = BasicBinaryOp.Add(a, b, output);
             var sub = BasicBinaryOp.Subtract(a, b, output);
             var mult = new Division(a, b, output, modulo);

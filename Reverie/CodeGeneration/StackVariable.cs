@@ -4,13 +4,13 @@
     {
         public override bool Sign { get; }
         public override VariableSize Size { get; }
-        public Label Base { get; }
-        public long Offset { get; }
+        public Label Base { get; set; }
+        public long Offset { get; set; }
 
-        public StackVariable(string baseLabel, long offset, VariableSize size, bool sign = false)
+        public StackVariable(VariableSize size, bool sign = false)
         {
-            Base = new Label(baseLabel);
-            Offset = offset;
+            Base = new Label("__TEMP__");
+            Offset = -1;
             Size = size;
             Sign = sign;
         }

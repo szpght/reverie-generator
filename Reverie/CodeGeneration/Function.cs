@@ -6,31 +6,32 @@ namespace Reverie.CodeGeneration
     {
         public string Name { get; set; }
         public CodeBlock Code { get; set; }
-        public List<Variable> Variables { get; set; }
-        public List<Variable> Arguments { get; set; }
+        public List<StackVariable> Arguments { get; set; }
         public Variable ReturnedValue { get; set; }
 
-        private IEnumerable<CString> Strings;
-        private IEnumerable<StackVariable> StackVariables;
+        private IList<CString> Strings;
+        private IList<StackVariable> StackVariables;
 
         public Function(string name)
         {
             Name = name;
             Code = new CodeBlock();
-            Variables = new List<Variable>();
-            Arguments = new List<Variable>();
+            Arguments = new List<StackVariable>();
         }
 
         public void Generate(Assembly asm, Context ctx)
         {
+            var storeVariablesAssembly = new Assembly();
             DetectVariables(ctx);
-            GeneratePrologue(asm);
+            var space = GenerateVariablesAndReturnStackSpace(storeVariablesAssembly, ctx);
+            GeneratePrologue(asm, space);
+            asm.Add(storeVariablesAssembly);
             Code.Generate(asm, ctx);
             GenerateEpilogue(asm, ctx);
             GenerateRodata(asm, ctx);
         }
 
-        private void GeneratePrologue(Assembly asm)
+        private void GeneratePrologue(Assembly asm, int spaceOnStack)
         {
             asm.Add("SECTION .text");
             var label = new Label(Name);
@@ -38,7 +39,7 @@ namespace Reverie.CodeGeneration
             label.Generate(asm, null);
             asm.Add("push rbp");
             asm.Add("mov rbp, rsp");
-            asm.Add($"sub rsp, {GetStackSpaceSize()}");
+            asm.Add($"sub rsp, {spaceOnStack}");
         }
 
         private void GenerateEpilogue(Assembly asm, Context ctx)
@@ -61,16 +62,48 @@ namespace Reverie.CodeGeneration
             }
         }
 
-        private int GetStackSpaceSize()
+        private int GenerateVariablesAndReturnStackSpace(Assembly asm, Context ctx)
         {
-            var count = Variables.Count;
+            var cc = ctx.CallingConvention;
+            var argRegisters = cc.GetArgumentRegisters();
 
-            // ensure stack alignement on 16 byte boundary
-            if (count % 2 == 0)
+            int variableCount = 0;
+
+            // alokacja miejsca argumentom w rejestrach
+            for (int i = 0; i < argRegisters.Count && i < Arguments.Count; ++i)
             {
-                count += 1;
+                var register = argRegisters[i];
+                var variable = Arguments[i];
+                if (!StackVariables.Contains(variable))
+                {
+                    continue;
+                }
+                StackVariables.Remove(variable);
+                variable.Base = new Label("rbp");
+                variable.Offset = -8 * (variableCount + 1);
+                variableCount++;
+                ctx.Store(register, variable, asm);
             }
-            return count * 8;
+
+            // alokacja argumentow na stosie
+            for (int i = argRegisters.Count; i < Arguments.Count; ++i)
+            {
+                var variable = Arguments[i];
+                StackVariables.Remove(variable);
+                int indexOnStack = i - argRegisters.Count;
+                variable.Base = new Label("rbp");
+                variable.Offset = 16 + indexOnStack * 8;
+            }
+
+            // alokacja pozostalych zmiennych
+            foreach (var variable in StackVariables)
+            {
+                variable.Base = new Label("rbp");
+                variable.Offset = -8 * (variableCount + 1);
+                variableCount++;
+            }
+
+            return variableCount * 8;
         }
 
         private void DetectVariables(Context ctx)

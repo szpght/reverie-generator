@@ -25,6 +25,19 @@ namespace Reverie.CodeGeneration
             };
         }
 
+        public IReadOnlyList<Register> GetArgumentRegisters()
+        {
+            return ArgumentRegisters;
+        }
+
+        public void SetArgumentVariables(IList<StackVariable> arguments)
+        {
+            for (int i = 0; i < ArgumentRegisters.Count && i < arguments.Count; ++i)
+            {
+                
+            }
+        }
+
         public void LoadArguments(IList<Variable> arguments, Assembly asm, Context ctx)
         {
             int i;
@@ -62,7 +75,7 @@ namespace Reverie.CodeGeneration
             ctx.Store(resultReg, result, asm);
         }
 
-        private readonly List<Register> ArgumentRegisters = new List<Register>
+        private readonly IReadOnlyList<Register> ArgumentRegisters = new List<Register>
         {
             new Register("rdi"),
             new Register("rsi"),
@@ -70,6 +83,6 @@ namespace Reverie.CodeGeneration
             new Register("rcx"),
             new Register("r8"),
             new Register("r9"),
-        };
+        }.AsReadOnly();
     }
 }

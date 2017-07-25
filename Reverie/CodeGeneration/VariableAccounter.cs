@@ -16,16 +16,18 @@ namespace Reverie.CodeGeneration
             Variables.Add(variable);
         }
 
-        public IEnumerable<CString> GetStrings()
+        public List<CString> GetStrings()
         {
             return Variables
-                .OfType<CString>();
+                .OfType<CString>()
+                .ToList();
         }
 
-        public IEnumerable<StackVariable> GetStackVariables()
+        public List<StackVariable> GetStackVariables()
         {
             return Variables
-                .OfType<StackVariable>();
+                .OfType<StackVariable>()
+                .ToList();
         }
     }
 }

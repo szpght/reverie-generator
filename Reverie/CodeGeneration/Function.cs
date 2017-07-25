@@ -34,7 +34,10 @@ namespace Reverie.CodeGeneration
 
         private void GenerateEpilogue(Assembly asm, Context ctx)
         {
-            ctx.LoadToRegister(ReturnedValue, new Register("rax"), asm);
+            if (ReturnedValue != null)
+            {
+                ctx.LoadToRegister(ReturnedValue, new Register("rax"), asm);
+            }
             asm.Add("mov rsp, rbp");
             asm.Add("pop rbp");
             asm.Add("ret");

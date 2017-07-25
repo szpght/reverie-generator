@@ -22,6 +22,7 @@ namespace Reverie.CodeGeneration
         {
             var cc = CallingConvention ?? ctx.CallingConvention;
             cc.LoadArguments(Arguments, asm, ctx);
+            asm.Add($"extern {Function}");
             asm.Add($"call {Function}");
             cc.UnloadArguments(Arguments, asm, ctx);
             ctx.InvalidateVolatileRegisters();

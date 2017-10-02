@@ -1,0 +1,118 @@
+[
+  {
+    "kind": "FunctionDefinition",
+    "name": "fibonacci",
+    "parameters": [
+      {
+        "name": {
+          "kind": "Identifier",
+          "name": "n"
+        },
+        "type": {
+          "kind": "NamedType",
+          "name": "int32"
+        }
+      }
+    ],
+    "returnType": {
+      "kind": "NamedType",
+      "name": "int32"
+    },
+    "body": {
+      "kind": "Body",
+      "statements": [
+        {
+          "kind": "ConditionalStatement",
+          "predicate": {
+            "kind": "BinaryOperator",
+            "lhs": {
+              "kind": "BinaryOperator",
+              "lhs": {
+                "kind": "Identifier",
+                "name": "n"
+              },
+              "operator": "==",
+              "rhs": {
+                "kind": "Number",
+                "value": 0
+              }
+            },
+            "operator": "or",
+            "rhs": {
+              "kind": "BinaryOperator",
+              "lhs": {
+                "kind": "Identifier",
+                "name": "n"
+              },
+              "operator": "==",
+              "rhs": {
+                "kind": "Number",
+                "value": 1
+              }
+            }
+          },
+          "thenBody": {
+            "kind": "Body",
+            "statements": [
+              {
+                "kind": "ReturnStatement",
+                "expression": {
+                  "kind": "Number",
+                  "value": 1
+                }
+              }
+            ]
+          },
+          "elseBody": {
+            "kind": "Body",
+            "statements": [
+              {
+                "kind": "ReturnStatement",
+                "expression": {
+                  "kind": "BinaryOperator",
+                  "lhs": {
+                    "kind": "FunctionApplication",
+                    "name": "fib",
+                    "args": [
+                      {
+                        "kind": "BinaryOperator",
+                        "lhs": {
+                          "kind": "Identifier",
+                          "name": "n"
+                        },
+                        "operator": "-",
+                        "rhs": {
+                          "kind": "Number",
+                          "value": 1
+                        }
+                      }
+                    ]
+                  },
+                  "operator": "+",
+                  "rhs": {
+                    "kind": "FunctionApplication",
+                    "name": "fib",
+                    "args": [
+                      {
+                        "kind": "BinaryOperator",
+                        "lhs": {
+                          "kind": "Identifier",
+                          "name": "n"
+                        },
+                        "operator": "-",
+                        "rhs": {
+                          "kind": "Number",
+                          "value": 2
+                        }
+                      }
+                    ]
+                  }
+                }
+              }
+            ]
+          }
+        }
+      ]
+    }
+  }
+]

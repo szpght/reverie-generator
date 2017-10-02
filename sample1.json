@@ -1,0 +1,116 @@
+[
+  {
+    "kind": "FunctionDefinition",
+    "name": "factorial",
+    "parameters": [
+      {
+        "name": {
+          "kind": "Identifier",
+          "name": "n"
+        },
+        "type": {
+          "kind": "NamedType",
+          "name": "int32"
+        }
+      }
+    ],
+    "returnType": {
+      "kind": "NamedType",
+      "name": "int32"
+    },
+    "body": {
+      "kind": "Body",
+      "statements": [
+        {
+          "kind": "VariableDeclaration",
+          "name": {
+            "kind": "Identifier",
+            "name": "out"
+          },
+          "type": {
+            "kind": "NamedType",
+            "name": "int32"
+          },
+          "initial": null
+        },
+        {
+          "kind": "LoopingStatement",
+          "predicate": {
+            "kind": "UnaryOperator",
+            "operator": "not",
+            "operand": {
+              "kind": "BinaryOperator",
+              "lhs": {
+                "kind": "Identifier",
+                "name": "n"
+              },
+              "operator": "<",
+              "rhs": {
+                "kind": "Number",
+                "value": 1
+              }
+            }
+          },
+          "doBody": {
+            "kind": "Body",
+            "statements": [
+              {
+                "kind": "ExpressionStatement",
+                "expression": {
+                  "kind": "BinaryOperator",
+                  "lhs": {
+                    "kind": "Identifier",
+                    "name": "out"
+                  },
+                  "operator": "=",
+                  "rhs": {
+                    "kind": "BinaryOperator",
+                    "lhs": {
+                      "kind": "Identifier",
+                      "name": "out"
+                    },
+                    "operator": "*",
+                    "rhs": {
+                      "kind": "Identifier",
+                      "name": "n"
+                    }
+                  }
+                }
+              },
+              {
+                "kind": "ExpressionStatement",
+                "expression": {
+                  "kind": "BinaryOperator",
+                  "lhs": {
+                    "kind": "Identifier",
+                    "name": "n"
+                  },
+                  "operator": "=",
+                  "rhs": {
+                    "kind": "BinaryOperator",
+                    "lhs": {
+                      "kind": "Identifier",
+                      "name": "n"
+                    },
+                    "operator": "-",
+                    "rhs": {
+                      "kind": "Number",
+                      "value": 1
+                    }
+                  }
+                }
+              }
+            ]
+          }
+        },
+        {
+          "kind": "ReturnStatement",
+          "expression": {
+            "kind": "Identifier",
+            "name": "out"
+          }
+        }
+      ]
+    }
+  }
+]
